@@ -349,6 +349,69 @@ async def create_collection(
     
     return JSONResponse({"success": True, "collection_id": collection_id})
 
+@app.get("/collections/{collection_id}")
+async def view_collection(request: Request, collection_id: str, db: Session = Depends(get_db)):
+    """Koleksiyon detayını görüntüle"""
+    lang = get_language(request)
+    
+    collection = db.query(Collection).filter(Collection.id == collection_id).first()
+    if not collection:
+        return templates.TemplateResponse("404.html", {"request": request})
+    
+    # Get styles in this collection
+    collection_styles = db.query(Style).filter(Style.collection_id == collection_id).all()
+    
+    response = templates.TemplateResponse("collection_detail.html", {
+        "request": request,
+        "collection": collection,
+        "styles": collection_styles,
+        "lang": lang,
+        "t": get_all_texts(lang)
+    })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
+
+@app.get("/collections/{collection_id}/edit")
+async def edit_collection(request: Request, collection_id: str, db: Session = Depends(get_db)):
+    """Koleksiyon düzenleme sayfası"""
+    lang = get_language(request)
+    
+    collection = db.query(Collection).filter(Collection.id == collection_id).first()
+    if not collection:
+        return templates.TemplateResponse("404.html", {"request": request})
+    
+    response = templates.TemplateResponse("collection_edit.html", {
+        "request": request,
+        "collection": collection,
+        "lang": lang,
+        "t": get_all_texts(lang)
+    })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
+
+@app.post("/collections/{collection_id}/edit")
+async def update_collection(
+    collection_id: str,
+    name: str = Form(...),
+    season: str = Form(...),
+    year: int = Form(...),
+    description: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Koleksiyon güncelle"""
+    collection = db.query(Collection).filter(Collection.id == collection_id).first()
+    if not collection:
+        return JSONResponse({"error": "Collection not found"}, status_code=404)
+    
+    # Fix Turkish character encoding
+    collection.name = fix_turkish_encoding(name)
+    collection.season = fix_turkish_encoding(season)
+    collection.year = year
+    collection.description = fix_turkish_encoding(description)
+    
+    db.commit()
+    return JSONResponse({"success": True})
+
 @app.get("/styles")
 async def styles_page(request: Request, db: Session = Depends(get_db)):
     """Stiller sayfası"""
