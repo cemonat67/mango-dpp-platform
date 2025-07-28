@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import qrcode
 import io
 import base64
@@ -19,6 +20,15 @@ import asyncio
 import aiohttp
 
 app = FastAPI(title="Mango DPP - Digital Product Platform")
+
+# CORS ve encoding ayarları
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Static files ve templates
 os.makedirs("static", exist_ok=True)
@@ -221,7 +231,7 @@ class MangoDPP:
 
 mango_dpp = MangoDPP()
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def dashboard(request: Request):
     """Ana dashboard"""
     stats = {
@@ -230,19 +240,23 @@ async def dashboard(request: Request):
         "total_samples": len(mango_dpp.samples),
         "total_nfts": len(mango_dpp.nfts)
     }
-    return templates.TemplateResponse("dashboard.html", {
+    response = templates.TemplateResponse("dashboard.html", {
         "request": request, 
         "stats": stats,
         "collections": list(mango_dpp.collections.values())[:5]
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
-@app.get("/collections", response_class=HTMLResponse)
+@app.get("/collections")
 async def collections_page(request: Request):
     """Koleksiyonlar sayfası"""
-    return templates.TemplateResponse("collections.html", {
+    response = templates.TemplateResponse("collections.html", {
         "request": request,
         "collections": list(mango_dpp.collections.values())
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 @app.post("/collections")
 async def create_collection(
@@ -265,14 +279,16 @@ async def create_collection(
     mango_dpp.collections[collection_id] = collection
     return JSONResponse({"success": True, "collection_id": collection_id})
 
-@app.get("/styles", response_class=HTMLResponse)
+@app.get("/styles")
 async def styles_page(request: Request):
     """Stiller sayfası"""
-    return templates.TemplateResponse("styles.html", {
+    response = templates.TemplateResponse("styles.html", {
         "request": request,
         "styles": list(mango_dpp.styles.values()),
         "collections": list(mango_dpp.collections.values())
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 @app.post("/styles")
 async def create_style(
