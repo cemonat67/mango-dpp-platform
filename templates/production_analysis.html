@@ -19,9 +19,9 @@
     </div>
 </div>
 
-<!-- En İyi ve En Kötü Lokasyonlar -->
+<!-- {{ t['best_worst_locations'] }} -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- En İyi Lokasyonlar -->
+    <!-- {{ t['lowest_carbon_locations'] }} -->
     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
         <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">
             <i class="fas fa-star text-primary mr-2"></i>
@@ -43,19 +43,19 @@
                 
                 <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Mesafe:</span>
+                        <span class="text-gray-600">{{ t['distance'] }}:</span>
                         <span class="text-gray-900">{{ stats.distance_km if stats.distance_km is defined else 'N/A' }} km</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Taşıma:</span>
+                        <span class="text-gray-600">{{ t['transport'] }}:</span>
                         <span class="text-gray-900">{{ stats.transport_emission if stats.transport_emission is defined else 'N/A' }} kg CO₂</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">İşçi:</span>
-                        <span class="text-gray-900">{{ stats.workforce if stats.workforce is defined else stats.count }} kişi</span>
+                        <span class="text-gray-600">{{ t['workers'] }}:</span>
+                        <span class="text-gray-900">{{ stats.workforce if stats.workforce is defined else stats.count }} {{ 'people' if lang == 'en' else 'kişi' }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Verimlilik:</span>
+                        <span class="text-gray-600">{{ t['efficiency'] }}:</span>
                         <span class="text-primary font-semibold">{{ stats.efficiency_score if stats.efficiency_score is defined else '75' }}%</span>
                     </div>
                 </div>
@@ -74,11 +74,11 @@
         </div>
     </div>
 
-    <!-- En Yüksek Karbon Lokasyonları -->
+    <!-- {{ t['improvement_needed_locations'] }} -->
     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
         <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">
             <i class="fas fa-exclamation-triangle text-secondary mr-2"></i>
-            İyileştirme Gereken Lokasyonlar
+            {{ t['improvement_needed_locations'] }}
         </h2>
         
         <div class="space-y-3">
@@ -96,19 +96,19 @@
                 
                 <div class="grid grid-cols-2 gap-2 text-xs md:text-sm">
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Mesafe:</span>
+                        <span class="text-gray-600">{{ t['distance'] }}:</span>
                         <span class="text-gray-900">{{ stats.distance_km if stats.distance_km is defined else 'N/A' }} km</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Taşıma:</span>
+                        <span class="text-gray-600">{{ t['transport'] }}:</span>
                         <span class="text-secondary font-semibold">{{ stats.transport_emission if stats.transport_emission is defined else 'N/A' }} kg CO₂</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">İşçi:</span>
-                        <span class="text-gray-900">{{ stats.workforce if stats.workforce is defined else stats.count }} kişi</span>
+                        <span class="text-gray-600">{{ t['workers'] }}:</span>
+                        <span class="text-gray-900">{{ stats.workforce if stats.workforce is defined else stats.count }} {{ 'people' if lang == 'en' else 'kişi' }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-600">Verimlilik:</span>
+                        <span class="text-gray-600">{{ t['efficiency'] }}:</span>
                         <span class="text-secondary font-semibold">{{ stats.efficiency_score if stats.efficiency_score is defined else '60' }}%</span>
                     </div>
                 </div>
@@ -128,7 +128,7 @@
     </div>
 </div>
 
-<!-- Detaylı Lokasyon Analizi -->
+<!-- {{ t['detailed_location_analysis'] }} -->
 <div class="bg-white rounded-lg shadow-md p-4 md:p-6 mb-8">
     <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">
         <i class="fas fa-globe text-navy mr-2"></i>
@@ -139,11 +139,11 @@
         <table class="min-w-full">
             <thead class="bg-gray-50">
                 <tr>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasyon</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ortalama CO₂</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesafe</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enerji</th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verimlilik</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t['location'] }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t['average_co2'] }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t['distance'] }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t['energy'] }}</th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ t['efficiency'] }}</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -157,7 +157,7 @@
                                 {% else %}text-secondary{% endif %} mr-2"></i>
                             <div>
                                 <div class="text-sm font-medium text-gray-900">{{ location }}</div>
-                                <div class="text-xs text-gray-500">{{ stats.count }} stil</div>
+                                <div class="text-xs text-gray-500">{{ stats.count }} {{ t['styles'] }}</div>
                             </div>
                         </div>
                     </td>
@@ -196,7 +196,7 @@
     </div>
 </div>
 
-<!-- Karbon Azaltım Önerileri -->
+<!-- {{ t['carbon_reduction_recommendations'] }} -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Kısa Vadeli Aksiyonlar -->
     <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
@@ -211,9 +211,9 @@
                     <i class="fas fa-shipping-fast text-primary text-sm"></i>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900 text-sm">Yakın Lokasyon Önceliği</h3>
-                    <p class="text-xs text-gray-600 mt-1">Türkiye içi üretimi %25 artırarak taşıma emisyonlarını azaltın.</p>
-                    <div class="mt-2 text-xs text-primary font-semibold">Potansiyel Azaltım: 15-20%</div>
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ t['nearby_location_priority'] }}</h3>
+                    <p class="text-xs text-gray-600 mt-1">{{ t['nearby_location_priority_desc'] }}</p>
+                    <div class="mt-2 text-xs text-primary font-semibold">{{ t['potential_reduction'] }}: 15-20%</div>
                 </div>
             </div>
             
@@ -222,9 +222,9 @@
                     <i class="fas fa-route text-navy text-sm"></i>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900 text-sm">Optimize Lojistik</h3>
-                    <p class="text-xs text-gray-600 mt-1">Konsolidasyon ile çoklu sevkiyatları birleştirin.</p>
-                    <div class="mt-2 text-xs text-navy font-semibold">Potansiyel Azaltım: 10-15%</div>
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ t['optimize_logistics'] }}</h3>
+                    <p class="text-xs text-gray-600 mt-1">{{ t['optimize_logistics_desc'] }}</p>
+                    <div class="mt-2 text-xs text-navy font-semibold">{{ t['potential_reduction'] }}: 10-15%</div>
                 </div>
             </div>
         </div>
@@ -243,9 +243,9 @@
                     <i class="fas fa-solar-panel text-secondary text-sm"></i>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900 text-sm">Yenilenebilir Enerji</h3>
-                    <p class="text-xs text-gray-600 mt-1">Üretici partnerlerin güneş enerjisi yatırımını destekleyin.</p>
-                    <div class="mt-2 text-xs text-secondary font-semibold">Potansiyel Azaltım: 30-40%</div>
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ t['renewable_energy'] }}</h3>
+                    <p class="text-xs text-gray-600 mt-1">{{ t['renewable_energy_desc'] }}</p>
+                    <div class="mt-2 text-xs text-secondary font-semibold">{{ t['potential_reduction'] }}: 30-40%</div>
                 </div>
             </div>
             
@@ -254,9 +254,9 @@
                     <i class="fas fa-certificate text-primary text-sm"></i>
                 </div>
                 <div>
-                    <h3 class="font-semibold text-gray-900 text-sm">Sertifikasyon Programı</h3>
-                    <p class="text-xs text-gray-600 mt-1">Tüm üreticilerin ISO 14001 sertifikasyonu almasını sağlayın.</p>
-                    <div class="mt-2 text-xs text-primary font-semibold">Sürdürülebilirlik Artışı: 25%</div>
+                    <h3 class="font-semibold text-gray-900 text-sm">{{ t['certification_program'] }}</h3>
+                    <p class="text-xs text-gray-600 mt-1">{{ t['certification_program_desc'] }}</p>
+                    <div class="mt-2 text-xs text-primary font-semibold">{{ t['sustainability_increase'] }}: 25%</div>
                 </div>
             </div>
         </div>
@@ -267,31 +267,31 @@
 <div class="bg-white rounded-lg shadow-md p-4 md:p-6">
     <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4">
         <i class="fas fa-chart-line text-navy mr-2"></i>
-        Karbon Emisyon Karşılaştırması
+        {{ t['carbon_emission_comparison'] }}
     </h2>
     
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="text-center p-3 bg-primary-light rounded-lg">
             <div class="text-xl md:text-2xl font-bold text-primary mb-1">4.1</div>
-            <p class="text-xs text-primary">Türkiye Ort.</p>
+            <p class="text-xs text-primary">{{ t['turkey_avg'] }}</p>
             <p class="text-xs text-gray-600">kg CO₂</p>
         </div>
         
         <div class="text-center p-3 bg-navy-light rounded-lg">
             <div class="text-xl md:text-2xl font-bold text-navy mb-1">6.8</div>
-            <p class="text-xs text-navy">Avrupa Ort.</p>
+            <p class="text-xs text-navy">{{ t['europe_avg'] }}</p>
             <p class="text-xs text-gray-600">kg CO₂</p>
         </div>
         
         <div class="text-center p-3 bg-secondary-light rounded-lg">
             <div class="text-xl md:text-2xl font-bold text-secondary mb-1">8.5</div>
-            <p class="text-xs text-secondary">Asya Ort.</p>
+            <p class="text-xs text-secondary">{{ t['asia_avg'] }}</p>
             <p class="text-xs text-gray-600">kg CO₂</p>
         </div>
         
         <div class="text-center p-3 bg-gray-100 rounded-lg">
             <div class="text-xl md:text-2xl font-bold text-gray-700 mb-1">3.2</div>
-            <p class="text-xs text-gray-700">Hedef 2025</p>
+            <p class="text-xs text-gray-700">{{ t['target_2025'] }}</p>
             <p class="text-xs text-gray-600">kg CO₂</p>
         </div>
     </div>

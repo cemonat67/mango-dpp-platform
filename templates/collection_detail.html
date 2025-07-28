@@ -29,12 +29,12 @@
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
         <i class="fas fa-info-circle text-navy mr-2"></i>
-        Koleksiyon Bilgileri
+        {{ t['collection_info'] }}
     </h2>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-            <label class="block text-sm font-medium text-gray-600 mb-1">Koleksiyon Adı</label>
+            <label class="block text-sm font-medium text-gray-600 mb-1">{{ t['collection_name'] }}</label>
             <p class="text-gray-900 font-semibold">{{ collection.name }}</p>
         </div>
         <div>
@@ -49,13 +49,13 @@
     
     {% if collection.description %}
     <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-600 mb-1">Açıklama</label>
+        <label class="block text-sm font-medium text-gray-600 mb-1">{{ t['description'] }}</label>
         <p class="text-gray-900">{{ collection.description }}</p>
     </div>
     {% endif %}
     
     <div class="mt-4">
-        <label class="block text-sm font-medium text-gray-600 mb-1">Oluşturulma Tarihi</label>
+        <label class="block text-sm font-medium text-gray-600 mb-1">{{ t['created_date'] }}</label>
         <p class="text-gray-900">{{ collection.created_at.strftime('%d %B %Y, %H:%M') if collection.created_at else 'N/A' }}</p>
     </div>
 </div>
@@ -69,7 +69,7 @@
         </h2>
         <a href="/styles?collection={{ collection.id }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
             <i class="fas fa-plus mr-2"></i>
-            Yeni Stil Ekle
+            {{ t['add_new_style'] }}
         </a>
     </div>
     
@@ -129,10 +129,10 @@
     {% else %}
         <div class="text-center py-12">
             <i class="fas fa-tshirt text-6xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 mb-4">Bu koleksiyonda henüz stil yok</p>
+            <p class="text-gray-500 mb-4">{{ t['no_styles_in_collection'] }}</p>
             <a href="/styles?collection={{ collection.id }}" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors">
                 <i class="fas fa-plus mr-2"></i>
-                İlk Stili Oluştur
+                {{ t['create_first_style'] }}
             </a>
         </div>
     {% endif %}
