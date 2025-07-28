@@ -123,6 +123,12 @@ translations = {
         "production_location_strategic": "Üretim Lokasyonu Stratejik Önerileri",
         "short_term_actions": "Kısa Vadeli Aksiyonlar",
         "long_term_goals": "Uzun Vadeli Hedefler",
+        "environmental_impact_info": "Çevresel Etki Bilgileri",
+        "what_is_carbon_footprint": "Karbon Ayak İzi Nedir?",
+        "why_important": "Neden Önemli?",
+        "carbon_footprint_definition": "Bir ürünün yaşam döngüsü boyunca (hammadde, üretim, taşıma, kullanım, atık) atmosfere salınan sera gazlarının CO₂ eşdeğeri cinsinden ölçümüdür.",
+        "why_important_text": "Moda endüstrisi küresel karbon emisyonlarının %10'undan sorumludur. Dijital takip ile bu etkiyi azaltabilir, müşteri güveni kazanabilirsiniz.",
+        "material_usage_summary": "Malzeme Kullanım Özeti",
         
         # NFT Passport
         "nft_passport_title": "NFT Dijital Pasaport",
@@ -276,6 +282,12 @@ translations = {
         "production_location_strategic": "Production Location Strategic Recommendations",
         "short_term_actions": "Short-term Actions",
         "long_term_goals": "Long-term Goals",
+        "environmental_impact_info": "Environmental Impact Information",
+        "what_is_carbon_footprint": "What is Carbon Footprint?",
+        "why_important": "Why is it Important?",
+        "carbon_footprint_definition": "The measurement of greenhouse gases released into the atmosphere during a product's entire lifecycle (raw materials, production, transportation, use, disposal) in terms of CO₂ equivalent.",
+        "why_important_text": "The fashion industry is responsible for 10% of global carbon emissions. With digital tracking, you can reduce this impact and gain customer trust.",
+        "material_usage_summary": "Material Usage Summary",
         
         # NFT Passport
         "nft_passport_title": "NFT Digital Passport",
