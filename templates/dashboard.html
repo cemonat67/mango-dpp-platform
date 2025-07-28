@@ -6,9 +6,9 @@
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">
         <i class="fas fa-chart-line text-navy mr-3"></i>
-        {{ t.dashboard_title if t else "Mango DPP Dashboard" }}
+        {{ t['dashboard_title'] if t else "Mango DPP Dashboard" }}
     </h1>
-    <p class="text-gray-600">{{ t.dashboard_subtitle if t else "Digital Product Platform - NFT Passport & Sustainability Tracking" }}</p>
+    <p class="text-gray-600">{{ t['dashboard_subtitle'] if t else "Digital Product Platform - NFT Passport & Sustainability Tracking" }}</p>
 </div>
 
 <!-- Stats Cards -->
@@ -19,7 +19,7 @@
                 <i class="fas fa-layer-group text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">{{ t.total_collections if t else "Collections" }}</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['total_collections'] if t else "Collections" }}</p>
                 <p class="text-2xl font-semibold text-gray-900">{{ stats.total_collections }}</p>
             </div>
         </div>
@@ -31,7 +31,7 @@
                 <i class="fas fa-tshirt text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">{{ t.total_styles if t else "Styles" }}</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['total_styles'] if t else "Styles" }}</p>
                 <p class="text-2xl font-semibold text-gray-900">{{ stats.total_styles }}</p>
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <i class="fas fa-vial text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Numuneler</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['total_samples'] if t else "Samples" }}</p>
                 <p class="text-2xl font-semibold text-gray-900">{{ stats.total_samples }}</p>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 <i class="fas fa-certificate text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">NFT Pasaportlar</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['total_nfts'] if t else "NFT Passports" }}</p>
                 <p class="text-2xl font-semibold text-gray-900">{{ stats.total_nfts }}</p>
             </div>
         </div>
@@ -66,7 +66,7 @@
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
         <i class="fas fa-clock text-blue-600 mr-2"></i>
-        Son Koleksiyonlar
+        {{ t['recent_collections'] if t else "Recent Collections" }}
     </h2>
     
     {% if collections %}
@@ -79,7 +79,7 @@
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="bg-navy-light text-navy text-xs px-2 py-1 rounded-full">
-                        {{ collection.styles|length }} stil
+                        {{ collection.styles|length }} {{ 'styles' if lang == 'en' else 'stil' }}
                     </span>
                 </div>
             </div>
@@ -88,23 +88,23 @@
     {% else %}
         <div class="text-center py-8">
             <i class="fas fa-plus-circle text-4xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 mb-4">Henüz koleksiyon oluşturulmamış</p>
+            <p class="text-gray-500 mb-4">{{ t['no_collections_yet'] if t else "No collections created yet" }}</p>
             <a href="/collections" class="btn-red-special text-white px-6 py-2 rounded-lg transition-colors">
-                İlk Koleksiyonu Oluştur
+                {{ t['create_first_collection'] if t else "Create First Collection" }}
             </a>
         </div>
     {% endif %}
 </div>
 
 <!-- Quick Actions -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
     <div class="bg-white rounded-lg shadow-md p-6 card-hover">
         <div class="text-center">
             <div class="p-4 bg-navy-light rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <i class="fas fa-plus text-navy text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Yeni Koleksiyon</h3>
-            <p class="text-gray-600 text-sm mb-4">Sezon bazl&inodot; koleksiyon olu&scedil;tur</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['new_collection'] if t else "New Collection" }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ t['create_collection_desc'] if t else "Create season-based collection" }}</p>
             <a href="/collections" class="bg-navy text-white px-4 py-2 rounded-lg btn-navy transition-colors">
                 Olu&scedil;tur
             </a>
@@ -116,8 +116,8 @@
             <div class="p-4 bg-primary-light rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <i class="fas fa-tshirt text-primary text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Yeni Stil</h3>
-            <p class="text-gray-600 text-sm mb-4">Stil tasarımı ve numune ekle</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['new_style'] if t else "New Style" }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ t['create_style_desc'] if t else "Add style design and sample" }}</p>
             <a href="/styles" class="bg-primary text-white px-4 py-2 rounded-lg btn-primary transition-colors">
                 Ekle
             </a>
@@ -129,12 +129,57 @@
             <div class="p-4 bg-primary-light rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <i class="fas fa-certificate text-primary text-xl"></i>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">NFT Pasaport</h3>
-            <p class="text-gray-600 text-sm mb-4">Dijital ürün kimliği oluştur</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['nft_passport'] if t else "NFT Passport" }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ t['create_nft_desc'] if t else "Create digital product identity" }}</p>
             <a href="/styles" class="bg-primary text-white px-4 py-2 rounded-lg btn-primary transition-colors">
                 Oluştur
             </a>
         </div>
     </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover border-2 border-red-200">
+        <div class="text-center">
+            <div class="p-4 bg-red-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <i class="fas fa-trash text-red-600 text-xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['delete_all_data'] if t else "Delete All Data" }}</h3>
+            <p class="text-gray-600 text-sm mb-4">{{ t['delete_all_desc'] if t else "Delete all database records and start fresh" }}</p>
+            <button onclick="confirmDeleteAll()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                <i class="fas fa-trash mr-2"></i>
+                {{ t['delete_all_data'] if t else "Delete All" }}
+            </button>
+        </div>
+    </div>
 </div>
+
+<script>
+async function confirmDeleteAll() {
+    const message = {{ (t['delete_all_confirm'] if t else "This will permanently delete all collections, styles, and NFTs. Are you sure?")|tojson }};
+    
+    if (confirm(message)) {
+        try {
+            const response = await fetch('/api/delete-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert({{ (t['delete_success'] if t else "All data deleted successfully. Database reset.")|tojson }});
+                // Reload the page to show empty state
+                window.location.reload();
+            } else {
+                alert({{ (t['delete_error'] if t else "Data deletion error")|tojson }} + ': ' + (result.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert({{ (t['delete_error'] if t else "Data deletion error")|tojson }} + ': ' + error.message);
+        }
+    }
+}
+</script>
+
 {% endblock %}

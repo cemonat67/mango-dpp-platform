@@ -997,6 +997,36 @@ async def get_stats(db: Session = Depends(get_db)):
         "total_carbon": sum([s.carbon_footprint or 0 for s in styles])
     }
 
+@app.post("/api/delete-all")
+async def delete_all_data(db: Session = Depends(get_db)):
+    """Delete all data from database - Fresh restart"""
+    try:
+        # Delete all NFT passports
+        db.query(NFTPassport).delete()
+        
+        # Delete all styles
+        db.query(Style).delete()
+        
+        # Delete all collections
+        db.query(Collection).delete()
+        
+        # Delete all suppliers
+        db.query(Supplier).delete()
+        
+        # Commit the changes
+        db.commit()
+        
+        return JSONResponse({
+            "success": True,
+            "message": "All data deleted successfully. Database reset complete."
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse({
+            "error": f"Failed to delete data: {str(e)}"
+        }, status_code=500)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
