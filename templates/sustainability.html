@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Sürdürülebilirlik Dashboard - Mango DPP{% endblock %}
+{% block title %}{{ t['sustainability_title'] }} - Mango DPP{% endblock %}
 
 {% block content %}
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900 mb-2">
         <i class="fas fa-seedling text-primary mr-3"></i>
-        S&uuml;rd&uuml;r&uuml;lebilirlik Dashboard
+        {{ t['sustainability_title'] }}
     </h1>
-    <p class="text-gray-600">Karbon ayak izi analizi ve &ccedil;evresel etki takibi</p>
+    <p class="text-gray-600">{{ t['sustainability_subtitle'] }}</p>
 </div>
 
 <!-- Stats Overview -->
@@ -19,7 +19,7 @@
                 <i class="fas fa-smog text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Toplam Karbon Ayak İzi</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['total_carbon'] }}</p>
                 <p class="text-2xl font-semibold text-secondary">{{ total_carbon }} kg CO₂</p>
             </div>
         </div>
@@ -31,9 +31,9 @@
                 <i class="fas fa-chart-line text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Ortalama Karbon</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['avg_carbon'] }}</p>
                 <p class="text-2xl font-semibold text-navy">{{ avg_carbon }} kg CO₂</p>
-                <p class="text-xs text-gray-500">per ürün</p>
+                <p class="text-xs text-gray-500">{{ t['per_product'] }}</p>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
                 <i class="fas fa-tshirt text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-sm font-medium text-gray-600">Analiz Edilen Stil</p>
+                <p class="text-sm font-medium text-gray-600">{{ t['analyzed_styles'] }}</p>
                 <p class="text-2xl font-semibold text-primary">{{ total_styles }}</p>
             </div>
         </div>
@@ -55,22 +55,22 @@
 <!-- Carbon Impact Chart -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-chart-bar text-blue-600 mr-2"></i>
-        Karbon Ayak İzi Dağılımı
+        <i class="fas fa-chart-bar text-navy mr-2"></i>
+        {{ t['carbon_distribution'] }}
     </h2>
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="text-center p-4 bg-green-50 rounded-lg">
-            <div class="text-2xl font-bold text-green-600 mb-2">
+        <div class="text-center p-4 bg-primary-light rounded-lg">
+            <div class="text-2xl font-bold text-primary mb-2">
                 {% set low_carbon = low_carbon_styles|length %}
                 {{ (low_carbon / total_styles * 100)|round|int }}%
             </div>
-            <p class="text-sm text-green-700">Düşük Karbon</p>
+            <p class="text-sm text-primary">{{ t['low_carbon'] }}</p>
             <p class="text-xs text-gray-600">&lt; 3kg CO₂</p>
         </div>
         
-        <div class="text-center p-4 bg-yellow-50 rounded-lg">
-            <div class="text-2xl font-bold text-yellow-600 mb-2">
+        <div class="text-center p-4 bg-navy-light rounded-lg">
+            <div class="text-2xl font-bold text-navy mb-2">
                 {% set medium_carbon = 0 %}
                 {% for style in low_carbon_styles %}
                     {% if style.carbon_footprint >= 3 and style.carbon_footprint <= 5 %}
@@ -79,12 +79,12 @@
                 {% endfor %}
                 {{ (medium_carbon / total_styles * 100)|round|int }}%
             </div>
-            <p class="text-sm text-yellow-700">Orta Karbon</p>
+            <p class="text-sm text-navy">{{ t['medium_carbon'] }}</p>
             <p class="text-xs text-gray-600">3-5kg CO₂</p>
         </div>
         
-        <div class="text-center p-4 bg-red-50 rounded-lg">
-            <div class="text-2xl font-bold text-red-600 mb-2">
+        <div class="text-center p-4 bg-secondary-light rounded-lg">
+            <div class="text-2xl font-bold text-secondary mb-2">
                 {% set high_carbon = 0 %}
                 {% for style in low_carbon_styles %}
                     {% if style.carbon_footprint > 5 %}
@@ -93,7 +93,7 @@
                 {% endfor %}
                 {{ (high_carbon / total_styles * 100)|round|int }}%
             </div>
-            <p class="text-sm text-red-700">Yüksek Karbon</p>
+            <p class="text-sm text-secondary">{{ t['high_carbon'] }}</p>
             <p class="text-xs text-gray-600">&gt; 5kg CO₂</p>
         </div>
     </div>
@@ -102,19 +102,19 @@
 <!-- Best Performing Styles -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-star text-green-600 mr-2"></i>
-        En Düşük Karbon Ayak İzli Stiller
+        <i class="fas fa-star text-primary mr-2"></i>
+        {{ t['lowest_carbon_styles'] }}
     </h2>
     
     <div class="space-y-4">
         {% for style in low_carbon_styles %}
-        <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+        <div class="flex items-center justify-between p-4 bg-primary-light rounded-lg">
             <div>
                 <h3 class="font-semibold text-gray-900">{{ style.name }}</h3>
                 <div class="flex items-center space-x-4 text-sm text-gray-600">
                     <span>
                         <i class="fas fa-cut mr-1"></i>
-                        {{ style.materials|join(", ") }}
+                        {{ style.materials|join(", ") if style.materials else '' }}
                     </span>
                     <span>
                         <i class="fas fa-map-marker-alt mr-1"></i>
@@ -123,7 +123,7 @@
                 </div>
             </div>
             <div class="text-right">
-                <div class="text-lg font-bold text-green-600">{{ style.carbon_footprint }} kg CO₂</div>
+                <div class="text-lg font-bold text-primary">{{ style.carbon_footprint }} kg CO₂</div>
                 <div class="text-xs text-gray-500">karbon ayak izi</div>
             </div>
         </div>
@@ -140,10 +140,10 @@
             </div>
             <i class="fas fa-arrow-right text-gray-400 group-hover:text-primary transition-colors"></i>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Malzeme Analizi</h3>
-        <p class="text-gray-600 text-sm">Malzeme bazlı karbon ayak izi ve sürdürülebilirlik skorları detaylı analizi</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['materials_analysis'] }}</h3>
+        <p class="text-gray-600 text-sm">{{ t['materials_analysis_desc'] }}</p>
         <div class="mt-3 flex items-center text-sm text-primary">
-            <span>Detaylı analiz için tıklayın</span>
+            <span>{{ t['detailed_analysis_click'] }}</span>
             <i class="fas fa-external-link-alt ml-2"></i>
         </div>
     </a>
@@ -155,10 +155,10 @@
             </div>
             <i class="fas fa-arrow-right text-gray-400 group-hover:text-navy transition-colors"></i>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Üretim Lokasyonu Analizi</h3>
-        <p class="text-gray-600 text-sm">Üretim merkezleri bazında çevresel etki ve optimizasyon önerileri</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['production_analysis'] }}</h3>
+        <p class="text-gray-600 text-sm">{{ t['production_analysis_desc'] }}</p>
         <div class="mt-3 flex items-center text-sm text-navy">
-            <span>Detaylı analiz için tıklayın</span>
+            <span>{{ t['detailed_analysis_click'] }}</span>
             <i class="fas fa-external-link-alt ml-2"></i>
         </div>
     </a>
@@ -168,7 +168,7 @@
 {% if material_analysis %}
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-cut text-green-600 mr-2"></i>
+        <i class="fas fa-cut text-primary mr-2"></i>
         Malzeme Kullanım Özeti
     </h2>
     
@@ -177,13 +177,13 @@
         <div class="text-center p-3 bg-gray-50 rounded-lg">
             <div class="text-lg font-bold text-gray-900">{{ data.count }}</div>
             <div class="text-xs text-gray-600 capitalize">{{ material }}</div>
-            <div class="text-xs text-green-600 font-semibold mt-1">{{ data.avg_carbon }}kg CO₂</div>
+            <div class="text-xs text-primary font-semibold mt-1">{{ data.avg_carbon }}kg CO₂</div>
         </div>
         {% endfor %}
     </div>
     
     <div class="mt-4 text-center">
-        <a href="/sustainability/materials" class="text-blue-600 hover:text-blue-800 text-sm">
+        <a href="/sustainability/materials" class="text-navy hover:text-primary text-sm">
             <i class="fas fa-arrow-right mr-1"></i>
             Tüm malzemelerin detaylı analizini görüntüle
         </a>
@@ -194,47 +194,47 @@
 <!-- Sustainability Recommendations -->
 <div class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
-        Sürdürülebilirlik Önerileri
+        <i class="fas fa-lightbulb text-navy mr-2"></i>
+        {{ t['sustainability_recommendations'] }}
     </h2>
     
     <div class="space-y-4">
         <div class="flex items-start">
-            <div class="p-2 bg-green-100 rounded-full mr-4">
-                <i class="fas fa-leaf text-green-600"></i>
+            <div class="p-2 bg-primary-light rounded-full mr-4">
+                <i class="fas fa-leaf text-primary"></i>
             </div>
             <div>
-                <h3 class="font-semibold text-gray-900">Organik Malzemeler</h3>
+                <h3 class="font-semibold text-gray-900">{{ t['organic_materials'] }}</h3>
                 <p class="text-gray-600 text-sm">Organik pamuk ve sürdürülebilir liflerin kullanımını artırın. Bu malzemeler %30'a kadar daha az karbon salınımı yapar.</p>
             </div>
         </div>
         
         <div class="flex items-start">
-            <div class="p-2 bg-blue-100 rounded-full mr-4">
-                <i class="fas fa-shipping-fast text-blue-600"></i>
+            <div class="p-2 bg-navy-light rounded-full mr-4">
+                <i class="fas fa-shipping-fast text-navy"></i>
             </div>
             <div>
-                <h3 class="font-semibold text-gray-900">Yerel Üretim</h3>
+                <h3 class="font-semibold text-gray-900">{{ t['local_production'] }}</h3>
                 <p class="text-gray-600 text-sm">Türkiye gibi yakın lokasyonlarda üretim yaparak taşıma kaynaklı emisyonları azaltın.</p>
             </div>
         </div>
         
         <div class="flex items-start">
-            <div class="p-2 bg-purple-100 rounded-full mr-4">
-                <i class="fas fa-recycle text-purple-600"></i>
+            <div class="p-2 bg-primary-light rounded-full mr-4">
+                <i class="fas fa-recycle text-primary"></i>
             </div>
             <div>
-                <h3 class="font-semibold text-gray-900">Geri Dönüştürülmüş Malzemeler</h3>
+                <h3 class="font-semibold text-gray-900">{{ t['recycled_materials'] }}</h3>
                 <p class="text-gray-600 text-sm">Recycled polyester gibi geri dönüştürülmüş malzemelerin kullanım oranını artırın.</p>
             </div>
         </div>
         
         <div class="flex items-start">
-            <div class="p-2 bg-yellow-100 rounded-full mr-4">
-                <i class="fas fa-certificate text-yellow-600"></i>
+            <div class="p-2 bg-navy-light rounded-full mr-4">
+                <i class="fas fa-certificate text-navy"></i>
             </div>
             <div>
-                <h3 class="font-semibold text-gray-900">Sertifikasyonlar</h3>
+                <h3 class="font-semibold text-gray-900">{{ t['certifications'] }}</h3>
                 <p class="text-gray-600 text-sm">GOTS, OEKO-TEX ve FairWear gibi sürdürülebilirlik sertifikaları alın.</p>
             </div>
         </div>
@@ -245,9 +245,9 @@
 <!-- No Data State -->
 <div class="bg-white rounded-lg shadow-md p-12 text-center">
     <i class="fas fa-seedling text-6xl text-gray-300 mb-4"></i>
-    <h3 class="text-xl font-semibold text-gray-600 mb-2">Henüz analiz edilecek stil yok</h3>
-    <p class="text-gray-500 mb-6">Sürdürülebilirlik analizleri için önce stil oluşturun.</p>
-    <a href="/styles" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">{{ t['no_styles_yet_analysis'] }}</h3>
+    <p class="text-gray-500 mb-6">{{ t['create_styles_for_analysis'] }}</p>
+    <a href="/styles" class="bg-primary text-white px-6 py-3 rounded-lg btn-green-special transition-colors">
         <i class="fas fa-plus mr-2"></i>
         İlk Stili Oluştur
     </a>
@@ -255,9 +255,9 @@
 {% endif %}
 
 <!-- Environmental Impact Info -->
-<div class="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+<div class="mt-8 bg-gradient-to-r from-primary-light to-navy-light rounded-lg p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-globe text-green-600 mr-2"></i>
+        <i class="fas fa-globe text-primary mr-2"></i>
         Çevresel Etki Bilgileri
     </h2>
     

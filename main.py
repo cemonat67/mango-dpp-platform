@@ -563,12 +563,15 @@ async def sustainability_page(request: Request, db: Session = Depends(get_db)):
     return response
 
 @app.get("/sustainability/materials", response_class=HTMLResponse)
-async def materials_analysis(request: Request):
+async def materials_analysis(request: Request, db: Session = Depends(get_db)):
     """Malzeme bazlı sürdürülebilirlik analizi"""
+    lang = request.cookies.get("lang", "tr")
     material_stats = {}
     
-    for style in mango_dpp.styles.values():
-        for material in style.get("materials", []):
+    styles = mango_dpp.get_styles(db)
+    for style in styles:
+        materials = style.materials if style.materials else []
+        for material in materials:
             if material not in material_stats:
                 material_stats[material] = {
                     "styles": [],
@@ -579,7 +582,7 @@ async def materials_analysis(request: Request):
                 }
             
             material_stats[material]["styles"].append(style)
-            material_stats[material]["total_carbon"] += style.get("carbon_footprint", 0)
+            material_stats[material]["total_carbon"] += style.carbon_footprint or 0
             material_stats[material]["usage_count"] += 1
     
     # Sürdürülebilirlik skorları (basitleştirilmiş)
@@ -609,20 +612,26 @@ async def materials_analysis(request: Request):
         key=lambda x: (x[1]["sustainability_score"], -x[1]["avg_carbon"])
     )[:5]
     
-    return templates.TemplateResponse("materials_analysis.html", {
+    response = templates.TemplateResponse("materials_analysis.html", {
         "request": request,
         "material_stats": material_stats,
         "best_materials": best_materials,
-        "worst_materials": worst_materials
+        "worst_materials": worst_materials,
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 @app.get("/sustainability/production", response_class=HTMLResponse)
-async def production_analysis(request: Request):
+async def production_analysis(request: Request, db: Session = Depends(get_db)):
     """Üretim lokasyonu bazlı analiz"""
+    lang = request.cookies.get("lang", "tr")
     location_stats = {}
     
-    for style in mango_dpp.styles.values():
-        location = style.get("production_location", "Bilinmiyor")
+    styles = mango_dpp.get_styles(db)
+    for style in styles:
+        location = style.production_location if style.production_location else "Bilinmiyor"
         if location not in location_stats:
             location_stats[location] = {
                 "styles": [],
@@ -632,7 +641,7 @@ async def production_analysis(request: Request):
             }
         
         location_stats[location]["styles"].append(style)
-        location_stats[location]["total_carbon"] += style.get("carbon_footprint", 0)
+        location_stats[location]["total_carbon"] += style.carbon_footprint or 0
         location_stats[location]["count"] += 1
     
     for location in location_stats:
@@ -647,11 +656,15 @@ async def production_analysis(request: Request):
         key=lambda x: x[1]["avg_carbon"]
     )[:5]
     
-    return templates.TemplateResponse("production_analysis.html", {
+    response = templates.TemplateResponse("production_analysis.html", {
         "request": request,
         "location_stats": location_stats,
-        "best_locations": best_locations
+        "best_locations": best_locations,
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 @app.get("/api/stats")
 async def get_stats(db: Session = Depends(get_db)):

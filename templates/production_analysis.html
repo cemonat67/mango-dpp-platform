@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Üretim Analizi - Mango DPP{% endblock %}
+{% block title %}{{ t['production_analysis'] }} - Mango DPP{% endblock %}
 
 {% block content %}
 <div class="mb-8">
@@ -8,13 +8,13 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">
                 <i class="fas fa-industry text-navy mr-3"></i>
-                Üretim Lokasyonu Analizi
+                {{ t['production_location_analysis'] }}
             </h1>
-            <p class="text-gray-600">Üretim merkezleri bazında karbon ayak izi ve çevresel etki değerlendirmesi</p>
+            <p class="text-gray-600">{{ t['production_carbon_evaluation'] }}</p>
         </div>
         <a href="/sustainability" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
             <i class="fas fa-arrow-left mr-2"></i>
-            Geri Dön
+            {{ t['back'] }}
         </a>
     </div>
 </div>
@@ -22,19 +22,19 @@
 <!-- En İyi Lokasyonlar -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-star text-green-600 mr-2"></i>
-        En Düşük Karbon Ayak İzli Lokasyonlar
+        <i class="fas fa-star text-primary mr-2"></i>
+        {{ t['lowest_carbon_locations'] }}
     </h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for location, stats in best_locations %}
-        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <div class="bg-primary-light border border-primary rounded-lg p-4">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                    <i class="fas fa-map-marker-alt text-primary mr-2"></i>
                     {{ location }}
                 </h3>
-                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                <span class="bg-primary-light text-primary text-xs px-2 py-1 rounded-full">
                     {{ stats.count }} stil
                 </span>
             </div>
@@ -42,7 +42,7 @@
             <div class="space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span class="text-gray-600">Ortalama Karbon:</span>
-                    <span class="text-green-600 font-semibold">{{ stats.avg_carbon }} kg CO₂</span>
+                    <span class="text-primary font-semibold">{{ stats.avg_carbon }} kg CO₂</span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-600">Toplam Karbon:</span>
@@ -50,8 +50,8 @@
                 </div>
             </div>
             
-            <div class="mt-3 pt-3 border-t border-green-200">
-                <p class="text-xs text-green-700">
+            <div class="mt-3 pt-3 border-t border-primary">
+                <p class="text-xs text-primary">
                     {% if location.lower() == 'türkiye' %}
                     Yakın üretim, düşük taşıma maliyeti
                     {% elif location.lower() == 'vietnam' %}
@@ -69,8 +69,8 @@
 <!-- Lokasyon Karşılaştırması -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-globe text-blue-600 mr-2"></i>
-        Tüm Üretim Lokasyonları
+        <i class="fas fa-globe text-navy mr-2"></i>
+        {{ t['all_production_locations'] }}
     </h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -79,16 +79,16 @@
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
                     <i class="fas fa-map-marker-alt 
-                        {% if stats.avg_carbon < 3 %}text-green-600
-                        {% elif stats.avg_carbon <= 5 %}text-yellow-600
-                        {% else %}text-red-600{% endif %} mr-2"></i>
+                        {% if stats.avg_carbon < 3 %}text-primary
+                        {% elif stats.avg_carbon <= 5 %}text-navy
+                        {% else %}text-secondary{% endif %} mr-2"></i>
                     {{ location }}
                 </h3>
                 <div class="text-right">
                     <div class="text-lg font-bold 
-                        {% if stats.avg_carbon < 3 %}text-green-600
-                        {% elif stats.avg_carbon <= 5 %}text-yellow-600
-                        {% else %}text-red-600{% endif %}">
+                        {% if stats.avg_carbon < 3 %}text-primary
+                        {% elif stats.avg_carbon <= 5 %}text-navy
+                        {% else %}text-secondary{% endif %}">
                         {{ stats.avg_carbon }} kg CO₂
                     </div>
                     <div class="text-xs text-gray-500">ortalama</div>
@@ -110,9 +110,9 @@
                 {% set max_carbon = location_stats.values()|map(attribute='avg_carbon')|max %}
                 <div class="w-full bg-gray-200 rounded-full h-2">
                     <div class="h-2 rounded-full 
-                        {% if stats.avg_carbon < 3 %}bg-green-600
-                        {% elif stats.avg_carbon <= 5 %}bg-yellow-600
-                        {% else %}bg-red-600{% endif %}" 
+                        {% if stats.avg_carbon < 3 %}bg-primary
+                        {% elif stats.avg_carbon <= 5 %}bg-navy
+                        {% else %}bg-secondary{% endif %}" 
                         style="width: {{ (stats.avg_carbon / max_carbon * 100)|round|int }}%"></div>
                 </div>
             </div>
@@ -122,27 +122,27 @@
                 <h4 class="text-sm font-semibold text-gray-900 mb-2">Lokasyon Özellikleri:</h4>
                 <div class="text-xs text-gray-600 space-y-1">
                     {% if location.lower() == 'türkiye' %}
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Yakın mesafe - düşük nakliye</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Kaliteli işçilik</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Hızlı teslimat</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Yakın mesafe - düşük nakliye</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Kaliteli işçilik</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Hızlı teslimat</p>
                     {% elif location.lower() == 'hindistan' %}
-                    <p><i class="fas fa-minus text-red-600 mr-1"></i> Uzun mesafe - yüksek nakliye</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Düşük işçilik maliyeti</p>
-                    <p><i class="fas fa-exclamation text-yellow-600 mr-1"></i> Karbon yoğun enerji</p>
+                    <p><i class="fas fa-minus text-secondary mr-1"></i> Uzun mesafe - yüksek nakliye</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Düşük işçilik maliyeti</p>
+                    <p><i class="fas fa-exclamation text-navy mr-1"></i> Karbon yoğun enerji</p>
                     {% elif location.lower() == 'çin' %}
-                    <p><i class="fas fa-minus text-red-600 mr-1"></i> Uzun mesafe</p>
-                    <p><i class="fas fa-minus text-red-600 mr-1"></i> Yüksek karbon enerji</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Büyük kapasiteler</p>
+                    <p><i class="fas fa-minus text-secondary mr-1"></i> Uzun mesafe</p>
+                    <p><i class="fas fa-minus text-secondary mr-1"></i> Yüksek karbon enerji</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Büyük kapasiteler</p>
                     {% elif location.lower() == 'bangladeş' %}
-                    <p><i class="fas fa-minus text-red-600 mr-1"></i> Uzun mesafe</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Düşük maliyetler</p>
-                    <p><i class="fas fa-exclamation text-yellow-600 mr-1"></i> Sürdürülebilirlik gelişiyor</p>
+                    <p><i class="fas fa-minus text-secondary mr-1"></i> Uzun mesafe</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Düşük maliyetler</p>
+                    <p><i class="fas fa-exclamation text-navy mr-1"></i> Sürdürülebilirlik gelişiyor</p>
                     {% elif location.lower() == 'vietnam' %}
-                    <p><i class="fas fa-minus text-red-600 mr-1"></i> Uzun mesafe</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Yenilenebilir enerji artışı</p>
-                    <p><i class="fas fa-plus text-green-600 mr-1"></i> Modern tesisler</p>
+                    <p><i class="fas fa-minus text-secondary mr-1"></i> Uzun mesafe</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Yenilenebilir enerji artışı</p>
+                    <p><i class="fas fa-plus text-primary mr-1"></i> Modern tesisler</p>
                     {% else %}
-                    <p><i class="fas fa-info text-blue-600 mr-1"></i> Detaylı analiz için daha fazla veri gerekli</p>
+                    <p><i class="fas fa-info text-navy mr-1"></i> Detaylı analiz için daha fazla veri gerekli</p>
                     {% endif %}
                 </div>
             </div>
@@ -154,8 +154,8 @@
 <!-- Karbonparası Hesaplama -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-calculator text-purple-600 mr-2"></i>
-        Taşıma Mesafesi ve Karbon Etkisi
+        <i class="fas fa-calculator text-navy mr-2"></i>
+        {{ t['transport_distance_carbon'] }}
     </h2>
     
     <div class="overflow-x-auto">
@@ -205,9 +205,9 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            {% if stats.avg_carbon < 3 %}bg-green-100 text-green-800
-                            {% elif stats.avg_carbon <= 5 %}bg-yellow-100 text-yellow-800
-                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {% if stats.avg_carbon < 3 %}bg-primary-light text-primary
+                            {% elif stats.avg_carbon <= 5 %}bg-navy-light text-navy
+                            {% else %}bg-secondary-light text-secondary{% endif %}">
                             {% if stats.avg_carbon < 3 %}Düşük Etki
                             {% elif stats.avg_carbon <= 5 %}Orta Etki
                             {% else %}Yüksek Etki{% endif %}
@@ -221,29 +221,29 @@
 </div>
 
 <!-- Stratejik Öneriler -->
-<div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-6">
+<div class="bg-gradient-to-r from-navy-light to-primary-light rounded-lg p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        <i class="fas fa-route text-blue-600 mr-2"></i>
-        Üretim Lokasyonu Stratejik Önerileri
+        <i class="fas fa-route text-navy mr-2"></i>
+        {{ t['production_location_strategic'] }}
     </h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <h3 class="font-semibold text-gray-900 mb-3">
-                <i class="fas fa-thumbs-up text-green-600 mr-2"></i>
-                Kısa Vadeli Aksiyonlar
+                <i class="fas fa-thumbs-up text-primary mr-2"></i>
+                {{ t['short_term_actions'] }}
             </h3>
             <ul class="space-y-2 text-sm text-gray-700">
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-navy mt-1 mr-2 text-xs"></i>
                     <span>Türkiye üretim payını %60'a çıkarın</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-navy mt-1 mr-2 text-xs"></i>
                     <span>Uzak lokasyonlar için deniz nakliyesi tercih edin</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-blue-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-navy mt-1 mr-2 text-xs"></i>
                     <span>Yüksek karbonlu lokasyonları carbon offset ile dengeleyin</span>
                 </li>
             </ul>
@@ -251,20 +251,20 @@
         
         <div>
             <h3 class="font-semibold text-gray-900 mb-3">
-                <i class="fas fa-bullseye text-purple-600 mr-2"></i>
-                Uzun Vadeli Hedefler
+                <i class="fas fa-bullseye text-secondary mr-2"></i>
+                {{ t['long_term_goals'] }}
             </h3>
             <ul class="space-y-2 text-sm text-gray-700">
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-purple-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-secondary mt-1 mr-2 text-xs"></i>
                     <span>2030'a kadar ortalama karbonu 3kg CO₂ altına indirin</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-purple-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-secondary mt-1 mr-2 text-xs"></i>
                     <span>Yenilenebilir enerji kullanan tedarikçilerle çalışın</span>
                 </li>
                 <li class="flex items-start">
-                    <i class="fas fa-arrow-right text-purple-600 mt-1 mr-2 text-xs"></i>
+                    <i class="fas fa-arrow-right text-secondary mt-1 mr-2 text-xs"></i>
                     <span>Bölgesel üretim hub'ları kurun</span>
                 </li>
             </ul>
