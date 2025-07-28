@@ -40,6 +40,15 @@ translations = {
         "delete_all_confirm": "Bu işlem tüm koleksiyonları, stilleri ve NFT'leri kalıcı olarak silecek. Emin misiniz?",
         "delete_success": "Tüm veriler başarıyla silindi. Veritabanı sıfırlandı.",
         "delete_error": "Veri silme hatası",
+        "create": "Oluştur",
+        "add": "Ekle", 
+        "edit": "Düzenle",
+        "delete": "Sil",
+        "save": "Kaydet",
+        "cancel": "İptal",
+        "back": "Geri",
+        "generate": "Oluştur",
+        "nft_create": "NFT Oluştur",
         
         # Collections
         "collections_title": "Koleksiyonlar",
@@ -303,6 +312,15 @@ translations = {
         "delete_all_confirm": "This will permanently delete all collections, styles, and NFTs. Are you sure?",
         "delete_success": "All data deleted successfully. Database reset.",
         "delete_error": "Data deletion error",
+        "create": "Create",
+        "add": "Add",
+        "edit": "Edit", 
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel",
+        "back": "Back",
+        "generate": "Generate",
+        "nft_create": "Create NFT",
         
         # Collections
         "collections_title": "Collections",

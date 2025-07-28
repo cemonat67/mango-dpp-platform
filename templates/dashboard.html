@@ -106,7 +106,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['new_collection'] if t else "New Collection" }}</h3>
             <p class="text-gray-600 text-sm mb-4">{{ t['create_collection_desc'] if t else "Create season-based collection" }}</p>
             <a href="/collections" class="bg-navy text-white px-4 py-2 rounded-lg btn-navy transition-colors">
-                Olu&scedil;tur
+                {{ t['create'] if t else "Create" }}
             </a>
         </div>
     </div>
@@ -119,7 +119,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['new_style'] if t else "New Style" }}</h3>
             <p class="text-gray-600 text-sm mb-4">{{ t['create_style_desc'] if t else "Add style design and sample" }}</p>
             <a href="/styles" class="bg-primary text-white px-4 py-2 rounded-lg btn-primary transition-colors">
-                Ekle
+                {{ t['add'] if t else "Add" }}
             </a>
         </div>
     </div>
@@ -132,7 +132,7 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ t['nft_passport'] if t else "NFT Passport" }}</h3>
             <p class="text-gray-600 text-sm mb-4">{{ t['create_nft_desc'] if t else "Create digital product identity" }}</p>
             <a href="/styles" class="bg-primary text-white px-4 py-2 rounded-lg btn-primary transition-colors">
-                Oluştur
+                {{ t['create'] if t else "Create" }}
             </a>
         </div>
     </div>

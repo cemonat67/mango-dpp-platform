@@ -89,7 +89,7 @@
                 </button>
                 {% else %}
                 <button onclick="generateNFT('{{ style.id }}')" class="bg-primary-light text-primary px-3 py-1 rounded text-xs hover:bg-green-200 transition-colors">
-                    <i class="fas fa-certificate mr-1"></i>NFT Oluştur
+                    <i class="fas fa-certificate mr-1"></i>{{ t['nft_create'] if t else "Create NFT" }}
                 </button>
                 {% endif %}
             </div>
@@ -189,10 +189,10 @@
             
             <div class="flex justify-end space-x-4">
                 <button type="button" onclick="hideCreateModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    İptal
+                    {{ t['cancel'] if t else "Cancel" }}
                 </button>
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg btn-primary transition-colors">
-                    Oluştur
+                    {{ t['create'] if t else "Create" }}
                 </button>
             </div>
         </form>
@@ -202,7 +202,7 @@
 <!-- NFT Generate Modal -->
 <div id="nftModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">NFT Dijital Pasaport Oluştur</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">NFT Dijital Pasaport {{ t['create'] if t else "Create" }}</h2>
         
         <form id="nftForm" onsubmit="createNFT(event)">
             <input type="hidden" id="nft_style_id" name="style_id">
@@ -219,11 +219,11 @@
             
             <div class="flex justify-end space-x-4">
                 <button type="button" onclick="hideNFTModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    İptal
+                    {{ t['cancel'] if t else "Cancel" }}
                 </button>
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded-lg btn-primary transition-colors">
                     <i class="fas fa-certificate mr-2"></i>
-                    NFT Oluştur
+                    {{ t['nft_create'] if t else "Create NFT" }}
                 </button>
             </div>
         </form>
