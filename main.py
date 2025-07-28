@@ -183,7 +183,15 @@ class MangoDPP:
             return image_path
             
         except Exception as e:
+            error_message = str(e)
             print(f"AI görsel oluşturma hatası: {e}")
+            
+            # Provide more specific error info
+            if "invalid_api_key" in error_message or "401" in error_message:
+                print("OpenAI API key geçersiz veya süresi dolmuş")
+            elif "billing" in error_message or "quota" in error_message:
+                print("OpenAI hesap bakiyesi yetersiz veya kota aşıldı")
+            
             return None
     
     def create_image_prompt(self, style_data: dict) -> str:
@@ -512,6 +520,7 @@ async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
     
         # Create style data for AI generation
         style_data = {
+            "id": style.id,
             "name": style.name,
             "materials": style.materials if style.materials else [],
             "category": style.category or "",
@@ -529,10 +538,20 @@ async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
                 "message": "Görsel başarıyla oluşturuldu"
             })
         else:
-            return JSONResponse({"error": "Görsel oluşturulamadı"}, status_code=500)
+            # More specific error based on AI status
+            if not mango_dpp.ai_enabled:
+                return JSONResponse({"error": "OpenAI API key geçersiz veya eksik"}, status_code=500)
+            else:
+                return JSONResponse({"error": "Görsel oluşturulamadı - OpenAI API'de sorun olabilir"}, status_code=500)
             
     except Exception as e:
-        return JSONResponse({"error": f"Görsel oluşturma hatası: {str(e)}"}, status_code=500)
+        error_message = str(e)
+        if "invalid_api_key" in error_message or "401" in error_message:
+            return JSONResponse({"error": "OpenAI API key geçersiz veya süresi dolmuş"}, status_code=401)
+        elif "billing" in error_message or "quota" in error_message:
+            return JSONResponse({"error": "OpenAI hesap bakiyesi yetersiz"}, status_code=402)
+        else:
+            return JSONResponse({"error": f"Görsel oluşturma hatası: {str(e)}"}, status_code=500)
 
 @app.get("/passport/{nft_id}", response_class=HTMLResponse)
 async def nft_passport(request: Request, nft_id: str, db: Session = Depends(get_db)):
