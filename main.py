@@ -24,6 +24,7 @@ import aiohttp
 # Database imports
 from database import get_db, init_db
 from models import Collection, Style, NFTPassport, Supplier
+from translations import get_text, get_all_texts
 
 app = FastAPI(title="Mango DPP - Digital Product Platform")
 
@@ -267,9 +268,14 @@ class MangoDPP:
 
 mango_dpp = MangoDPP()
 
+def get_language(request: Request) -> str:
+    """Get current language from cookie or default to Turkish"""
+    return request.cookies.get("language", "tr")
+
 @app.get("/")
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Ana dashboard"""
+    lang = get_language(request)
     collections = mango_dpp.get_collections(db)
     styles = mango_dpp.get_styles(db)
     nfts = mango_dpp.get_nfts(db)
@@ -284,18 +290,30 @@ async def dashboard(request: Request, db: Session = Depends(get_db)):
     response = templates.TemplateResponse("dashboard.html", {
         "request": request, 
         "stats": stats,
-        "collections": collections[:5]
+        "collections": collections[:5],
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
+
+@app.post("/set-language")
+async def set_language(language: str = Form(...)):
+    """Set language preference"""
+    response = JSONResponse({"success": True, "language": language})
+    response.set_cookie("language", language, max_age=31536000)  # 1 year
     return response
 
 @app.get("/collections")
 async def collections_page(request: Request, db: Session = Depends(get_db)):
     """Koleksiyonlar sayfası"""
+    lang = get_language(request)
     collections = mango_dpp.get_collections(db)
     response = templates.TemplateResponse("collections.html", {
         "request": request,
-        "collections": collections
+        "collections": collections,
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     return response
