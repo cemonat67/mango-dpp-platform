@@ -6,10 +6,25 @@
     <title>{% block title %}Mango DPP - Digital Product Platform{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
+        
+        :root {
+            --color-primary: #005530;    /* Green */
+            --color-secondary: #dc2626;  /* Red - standart kırmızı */
+            --color-navy: #02154e;       /* Navy */
+            --color-primary-light: rgba(0, 85, 48, 0.1);
+            --color-secondary-light: rgba(220, 38, 38, 0.1);
+            --color-navy-light: rgba(2, 21, 78, 0.1);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--color-navy) 0%, #1f2937 100%);
+        }
+        
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -17,9 +32,50 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
+        
         .nft-glow {
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-            border: 1px solid rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 20px var(--color-navy-light);
+            border: 1px solid var(--color-navy);
+        }
+        
+        /* Custom color classes */
+        .bg-primary { background-color: var(--color-primary) !important; }
+        .bg-primary-light { background-color: var(--color-primary-light) !important; }
+        .text-primary { color: var(--color-primary) !important; }
+        .border-primary { border-color: var(--color-primary) !important; }
+        
+        .bg-secondary { background-color: var(--color-secondary) !important; }
+        .bg-secondary-light { background-color: var(--color-secondary-light) !important; }
+        .text-secondary { color: var(--color-secondary) !important; }
+        .border-secondary { border-color: var(--color-secondary) !important; }
+        
+        .bg-navy { background-color: var(--color-navy) !important; }
+        .bg-navy-light { background-color: var(--color-navy-light) !important; }
+        .text-navy { color: var(--color-navy) !important; }
+        .border-navy { border-color: var(--color-navy) !important; }
+        
+        /* Button hover effects */
+        .btn-primary:hover { 
+            background-color: rgba(0, 85, 48, 0.9) !important; 
+        }
+        .btn-secondary:hover { 
+            background-color: rgba(220, 38, 38, 0.9) !important;
+        }
+        .btn-navy:hover { 
+            background-color: rgba(2, 21, 78, 0.9) !important; 
+        }
+        
+        /* Focus states */
+        .focus-primary:focus {
+            outline: none !important;
+            ring: 2px !important;
+            ring-color: var(--color-primary) !important;
+        }
+        
+        .focus-navy:focus {
+            outline: none !important;
+            ring: 2px !important;
+            ring-color: var(--color-navy) !important;
         }
     </style>
 </head>
@@ -30,21 +86,21 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <a href="/" class="text-white text-xl font-bold flex items-center">
-                        <i class="fas fa-leaf mr-2 text-green-400"></i>
+                        <i class="fas fa-leaf mr-2" style="color: var(--color-primary);"></i>
                         Mango DPP
                     </a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="/" class="text-white hover:text-green-400 transition-colors">
+                    <a href="/" class="text-white hover:text-green-300 transition-colors">
                         <i class="fas fa-home mr-1"></i> Dashboard
                     </a>
-                    <a href="/collections" class="text-white hover:text-green-400 transition-colors">
+                    <a href="/collections" class="text-white hover:text-green-300 transition-colors">
                         <i class="fas fa-layer-group mr-1"></i> Koleksiyonlar
                     </a>
-                    <a href="/styles" class="text-white hover:text-green-400 transition-colors">
+                    <a href="/styles" class="text-white hover:text-green-300 transition-colors">
                         <i class="fas fa-tshirt mr-1"></i> Stiller
                     </a>
-                    <a href="/sustainability" class="text-white hover:text-green-400 transition-colors">
+                    <a href="/sustainability" class="text-white hover:text-green-300 transition-colors">
                         <i class="fas fa-seedling mr-1"></i> Sürdürülebilirlik
                     </a>
                 </div>
