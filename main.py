@@ -439,22 +439,28 @@ async def create_style(
     })
 
 @app.post("/generate-image/{style_id}")
-async def generate_style_image(style_id: str):
+async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
     """Var olan stil için AI görsel oluştur"""
-    if style_id not in mango_dpp.styles:
-        return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
-    
-    if not mango_dpp.ai_enabled:
-        return JSONResponse({"error": "AI görsel oluşturma devre dışı. OpenAI API key gerekli."}, status_code=400)
-    
-    style = mango_dpp.styles[style_id]
-    
     try:
-        image_path = await mango_dpp.generate_product_image(style)
+        style = db.query(Style).filter(Style.id == int(style_id)).first()
+        if not style:
+            return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+        
+        if not mango_dpp.ai_enabled:
+            return JSONResponse({"error": "AI görsel oluşturma devre dışı. OpenAI API key gerekli."}, status_code=400)
+    
+        # Create style data for AI generation
+        style_data = {
+            "name": style.name,
+            "materials": style.materials if style.materials else [],
+            "category": style.category or "",
+            "description": f"{style.name} made of {', '.join(style.materials) if style.materials else 'fabric'}"
+        }
+        
+        image_path = await mango_dpp.generate_product_image(style_data)
         if image_path:
-            style["image_url"] = image_path
-            style["status"] = "görsel_oluşturuldu"
-            mango_dpp.styles[style_id] = style
+            style.image_url = image_path
+            db.commit()
             
             return JSONResponse({
                 "success": True,
