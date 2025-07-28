@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Sürdürülebilirlik Dashboard - Mango DPP{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        <i class="fas fa-seedling text-green-600 mr-3"></i>
+        Sürdürülebilirlik Dashboard
+    </h1>
+    <p class="text-gray-600">Karbon ayak izi analizi ve çevresel etki takibi</p>
+</div>
+
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-red-100 text-red-600">
+                <i class="fas fa-smog text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Toplam Karbon Ayak İzi</p>
+                <p class="text-2xl font-semibold text-red-600">{{ total_carbon }} kg CO₂</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                <i class="fas fa-chart-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Ortalama Karbon</p>
+                <p class="text-2xl font-semibold text-yellow-600">{{ avg_carbon }} kg CO₂</p>
+                <p class="text-xs text-gray-500">per ürün</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                <i class="fas fa-tshirt text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">Analiz Edilen Stil</p>
+                <p class="text-2xl font-semibold text-green-600">{{ total_styles }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if total_styles > 0 %}
+<!-- Carbon Impact Chart -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-bar text-blue-600 mr-2"></i>
+        Karbon Ayak İzi Dağılımı
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="text-center p-4 bg-green-50 rounded-lg">
+            <div class="text-2xl font-bold text-green-600 mb-2">
+                {% set low_carbon = low_carbon_styles|length %}
+                {{ (low_carbon / total_styles * 100)|round|int }}%
+            </div>
+            <p class="text-sm text-green-700">Düşük Karbon</p>
+            <p class="text-xs text-gray-600">&lt; 3kg CO₂</p>
+        </div>
+        
+        <div class="text-center p-4 bg-yellow-50 rounded-lg">
+            <div class="text-2xl font-bold text-yellow-600 mb-2">
+                {% set medium_carbon = 0 %}
+                {% for style in low_carbon_styles %}
+                    {% if style.carbon_footprint >= 3 and style.carbon_footprint <= 5 %}
+                        {% set medium_carbon = medium_carbon + 1 %}
+                    {% endif %}
+                {% endfor %}
+                {{ (medium_carbon / total_styles * 100)|round|int }}%
+            </div>
+            <p class="text-sm text-yellow-700">Orta Karbon</p>
+            <p class="text-xs text-gray-600">3-5kg CO₂</p>
+        </div>
+        
+        <div class="text-center p-4 bg-red-50 rounded-lg">
+            <div class="text-2xl font-bold text-red-600 mb-2">
+                {% set high_carbon = 0 %}
+                {% for style in low_carbon_styles %}
+                    {% if style.carbon_footprint > 5 %}
+                        {% set high_carbon = high_carbon + 1 %}
+                    {% endif %}
+                {% endfor %}
+                {{ (high_carbon / total_styles * 100)|round|int }}%
+            </div>
+            <p class="text-sm text-red-700">Yüksek Karbon</p>
+            <p class="text-xs text-gray-600">&gt; 5kg CO₂</p>
+        </div>
+    </div>
+</div>
+
+<!-- Best Performing Styles -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-star text-green-600 mr-2"></i>
+        En Düşük Karbon Ayak İzli Stiller
+    </h2>
+    
+    <div class="space-y-4">
+        {% for style in low_carbon_styles %}
+        <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+            <div>
+                <h3 class="font-semibold text-gray-900">{{ style.name }}</h3>
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <span>
+                        <i class="fas fa-cut mr-1"></i>
+                        {{ style.materials|join(", ") }}
+                    </span>
+                    <span>
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        {{ style.production_location }}
+                    </span>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-lg font-bold text-green-600">{{ style.carbon_footprint }} kg CO₂</div>
+                <div class="text-xs text-gray-500">karbon ayak izi</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Sustainability Recommendations -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-lightbulb text-yellow-600 mr-2"></i>
+        Sürdürülebilirlik Önerileri
+    </h2>
+    
+    <div class="space-y-4">
+        <div class="flex items-start">
+            <div class="p-2 bg-green-100 rounded-full mr-4">
+                <i class="fas fa-leaf text-green-600"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-900">Organik Malzemeler</h3>
+                <p class="text-gray-600 text-sm">Organik pamuk ve sürdürülebilir liflerin kullanımını artırın. Bu malzemeler %30'a kadar daha az karbon salınımı yapar.</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start">
+            <div class="p-2 bg-blue-100 rounded-full mr-4">
+                <i class="fas fa-shipping-fast text-blue-600"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-900">Yerel Üretim</h3>
+                <p class="text-gray-600 text-sm">Türkiye gibi yakın lokasyonlarda üretim yaparak taşıma kaynaklı emisyonları azaltın.</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start">
+            <div class="p-2 bg-purple-100 rounded-full mr-4">
+                <i class="fas fa-recycle text-purple-600"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-900">Geri Dönüştürülmüş Malzemeler</h3>
+                <p class="text-gray-600 text-sm">Recycled polyester gibi geri dönüştürülmüş malzemelerin kullanım oranını artırın.</p>
+            </div>
+        </div>
+        
+        <div class="flex items-start">
+            <div class="p-2 bg-yellow-100 rounded-full mr-4">
+                <i class="fas fa-certificate text-yellow-600"></i>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-900">Sertifikasyonlar</h3>
+                <p class="text-gray-600 text-sm">GOTS, OEKO-TEX ve FairWear gibi sürdürülebilirlik sertifikaları alın.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- No Data State -->
+<div class="bg-white rounded-lg shadow-md p-12 text-center">
+    <i class="fas fa-seedling text-6xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">Henüz analiz edilecek stil yok</h3>
+    <p class="text-gray-500 mb-6">Sürdürülebilirlik analizleri için önce stil oluşturun.</p>
+    <a href="/styles" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+        <i class="fas fa-plus mr-2"></i>
+        İlk Stili Oluştur
+    </a>
+</div>
+{% endif %}
+
+<!-- Environmental Impact Info -->
+<div class="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-globe text-green-600 mr-2"></i>
+        Çevresel Etki Bilgileri
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Karbon Ayak İzi Nedir?</h3>
+            <p class="text-gray-700 text-sm">
+                Bir ürünün yaşam döngüsü boyunca (hammadde, üretim, taşıma, kullanım, atık) 
+                atmosfere salınan sera gazlarının CO₂ eşdeğeri cinsinden ölçümüdür.
+            </p>
+        </div>
+        
+        <div>
+            <h3 class="font-semibold text-gray-900 mb-2">Neden Önemli?</h3>
+            <p class="text-gray-700 text-sm">
+                Moda endüstrisi küresel karbon emisyonlarının %10'undan sorumludur. 
+                Dijital takip ile bu etkiyi azaltabilir, müşteri güveni kazanabilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
