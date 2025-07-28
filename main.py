@@ -135,15 +135,18 @@ class MangoDPP:
     def setup_ai_client(self):
         """AI client kurulumu"""
         try:
-            # Keyring'den OpenAI API key'i al
-            api_key = None
-            for key_name in ['OPENAI_API_KEY', 'openai_api_key', 'openai-api-key']:
-                try:
-                    api_key = keyring.get_password("memex", key_name)
-                    if api_key:
-                        break
-                except:
-                    continue
+            # Environment variable'dan al (cloud deployment için)
+            api_key = os.getenv("OPENAI_API_KEY")
+            
+            # Keyring'den OpenAI API key'i al (local development için)
+            if not api_key:
+                for key_name in ['OPENAI_API_KEY', 'openai_api_key', 'openai-api-key']:
+                    try:
+                        api_key = keyring.get_password("memex", key_name)
+                        if api_key:
+                            break
+                    except:
+                        continue
             
             if api_key:
                 self.openai_client = openai.OpenAI(api_key=api_key)
