@@ -52,8 +52,8 @@
     {% if not collections %}
     <div class="col-span-3 text-center py-12">
         <i class="fas fa-layer-group text-6xl text-gray-300 mb-4"></i>
-        <h3 class="text-xl font-semibold text-gray-600 mb-2">Henüz koleksiyon yok</h3>
-        <p class="text-gray-500 mb-6">İlk koleksiyonunuzu oluşturmak için başlayın.</p>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">{{ t['no_collections_yet_empty'] if t else "No collections yet" }}</h3>
+        <p class="text-gray-500 mb-6">{{ t['start_creating_collection'] if t else "Start by creating your first collection." }}</p>
         <button onclick="showCreateModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             <i class="fas fa-plus mr-2"></i>
             {{ t['create_first_collection'] if t else "Create First Collection" }}
