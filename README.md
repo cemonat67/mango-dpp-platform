@@ -29,16 +29,57 @@ Moda markalarının koleksiyon geliştirme, numune yönetimi ve tedarik zinciri 
 source .venv/bin/activate
 
 # Uygulamayı çalıştır
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --host 0.0.0.0 --port 8002
 ```
+
+## 🎨 Tasarım Sistemi
+
+### Renk Paleti
+- **Ana Renk (Green)**: `#005530` - Sürdürülebilirlik ve doğa
+- **İkincil Renk (Red)**: `#dc2626` - Uyarı ve kritik veriler  
+- **Navy**: `#02154e` - Güven ve profesyonellik
+- **Beyaz**: Ana arkaplan rengi
+- **Gri Tonları**: Metin ve ikincil elemanlar
+
+### Tipografi
+- **Ana Font**: Inter (Google Fonts)
+- **Türkçe karakter desteği**: ğ, ü, ş, ı, ç, ö
+- **Font Ağırlıkları**: 300, 400, 500, 600, 700, 800
 
 ## 📱 Kullanım
 
-1. Web tarayıcısında `http://localhost:8000` adresine git
-2. Koleksiyon oluştur
-3. Stil ve numune ekle
+1. Web tarayıcısında `http://localhost:8002` adresine git
+2. Koleksiyon oluştur ("Sürdürülebilir Koleksiyon 2025")
+3. Stil ekle (AI görsel oluşturma seçeneği ile)
 4. NFT dijital pasaport oluştur
 5. QR kod ile ürün takibi yap
+6. Sürdürülebilirlik analizlerini incele:
+   - Malzeme bazlı karbon analizi
+   - Üretim lokasyonu analizi
+
+## 🌟 **Gelişmiş Özellikler**
+
+### 1. **AI Görsel Oluşturma**
+- OpenAI DALL-E 3 entegrasyonu
+- Stil tanımından otomatik ürün görseli
+- Ürün fotoğrafları AI ile oluşturulur
+
+### 2. **Detaylı Sürdürülebilirlik Analizi**
+- **Malzeme Analizi**: `/sustainability/materials`
+  - Sürdürülebilirlik skorları (1-10 ölçeği)
+  - En iyi/en kötü malzemeler
+  - Organik pamuk vs polyester karşılaştırması
+
+- **Üretim Lokasyonu Analizi**: `/sustainability/production`  
+  - Lokasyon bazlı karbon ayak izi
+  - Taşıma mesafesi hesaplamaları
+  - Türkiye, Çin, Hindistan karşılaştırması
+
+### 3. **NFT Dijital Pasaport**
+- Blockchain tabanlı ürün kimliği
+- QR kod ile anında erişim
+- Sertifika ve sürdürülebilirlik verileri
+- Paylaşılabilir dijital pasaport
 
 ---
 🤖 Generated with [Memex](https://memex.tech)
