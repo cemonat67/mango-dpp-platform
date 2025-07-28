@@ -100,13 +100,17 @@
     <nav class="gradient-bg shadow-lg">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between h-16">
+                <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="/" class="text-white text-xl font-bold flex items-center">
+                    <a href="/" class="text-white text-lg md:text-xl font-bold flex items-center">
                         <i class="fas fa-leaf mr-2" style="color: var(--color-primary);"></i>
-                        Mango DPP
+                        <span class="hidden sm:inline">Mango DPP</span>
+                        <span class="sm:hidden">DPP</span>
                     </a>
                 </div>
-                <div class="flex items-center space-x-6">
+
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-6">
                     <div class="flex items-center space-x-4">
                         <a href="/" class="text-white hover:text-green-300 transition-colors">
                             <i class="fas fa-home mr-1"></i> {{ t.dashboard if t else "Dashboard" }}
@@ -127,14 +131,12 @@
                         <!-- Language Switcher -->
                         <div class="flex items-center space-x-2">
                             <button onclick="switchLanguage('tr')" 
-                                    class="text-white hover:text-green-300 transition-colors text-sm px-2 py-1 rounded"
-                                    class="{{ 'bg-green-600' if lang == 'tr' else '' }}">
+                                    class="text-white hover:text-green-300 transition-colors text-sm px-2 py-1 rounded {{ 'bg-green-600' if lang == 'tr' else '' }}">
                                 TR
                             </button>
                             <span class="text-white">|</span>
                             <button onclick="switchLanguage('en')" 
-                                    class="text-white hover:text-green-300 transition-colors text-sm px-2 py-1 rounded"
-                                    class="{{ 'bg-green-600' if lang == 'en' else '' }}">
+                                    class="text-white hover:text-green-300 transition-colors text-sm px-2 py-1 rounded {{ 'bg-green-600' if lang == 'en' else '' }}">
                                 EN
                             </button>
                         </div>
@@ -144,10 +146,61 @@
                             <a href="https://rabateks.com" target="_blank" class="flex items-center hover:opacity-80 transition-opacity">
                                 <img src="/static/images/rabateks-logo.svg" 
                                      alt="Rabateks" 
-                                     class="h-10 w-10">
+                                     class="h-8 w-8 md:h-10 md:w-10">
                             </a>
                         </div>
                     </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden flex items-center space-x-2">
+                    <!-- Mobile Language Switcher -->
+                    <div class="flex items-center space-x-1">
+                        <button onclick="switchLanguage('tr')" 
+                                class="text-white hover:text-green-300 transition-colors text-xs px-2 py-1 rounded {{ 'bg-green-600' if lang == 'tr' else '' }}">
+                            TR
+                        </button>
+                        <button onclick="switchLanguage('en')" 
+                                class="text-white hover:text-green-300 transition-colors text-xs px-2 py-1 rounded {{ 'bg-green-600' if lang == 'en' else '' }}">
+                            EN
+                        </button>
+                    </div>
+                    
+                    <!-- Hamburger button -->
+                    <button onclick="toggleMobileMenu()" class="text-white hover:text-green-300 focus:outline-none">
+                        <i class="fas fa-bars text-xl" id="hamburger-icon"></i>
+                        <i class="fas fa-times text-xl hidden" id="close-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div class="lg:hidden hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 bg-slate-800 rounded-lg mt-2">
+                    <a href="/" class="text-white hover:text-green-300 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-home mr-2"></i> {{ t.dashboard if t else "Dashboard" }}
+                    </a>
+                    <a href="/collections" class="text-white hover:text-green-300 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-layer-group mr-2"></i> {{ t.collections if t else "Collections" }}
+                    </a>
+                    <a href="/styles" class="text-white hover:text-green-300 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-tshirt mr-2"></i> {{ t.styles if t else "Styles" }}
+                    </a>
+                    <a href="/sustainability" class="text-white hover:text-green-300 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-seedling mr-2"></i> {{ t.sustainability if t else "Sustainability" }}
+                    </a>
+                    
+                    <!-- Mobile Rabateks Logo -->
+                    <div class="px-3 py-2 border-t border-gray-600">
+                        <a href="https://rabateks.com" target="_blank" class="flex items-center text-white hover:opacity-80 transition-opacity">
+                            <img src="/static/images/rabateks-logo.svg" 
+                                 alt="Rabateks" 
+                                 class="h-8 w-8 mr-2">
+                            <span class="text-sm">Powered by Rabateks</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -186,6 +239,28 @@
                 console.error('Language switch error:', error);
             }
         }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = document.getElementById('hamburger-icon');
+            const closeIcon = document.getElementById('close-icon');
+            
+            mobileMenu.classList.toggle('hidden');
+            hamburgerIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerButton = event.target.closest('button[onclick="toggleMobileMenu()"]');
+            
+            if (!hamburgerButton && !mobileMenu.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+                document.getElementById('hamburger-icon').classList.remove('hidden');
+                document.getElementById('close-icon').classList.add('hidden');
+            }
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>
