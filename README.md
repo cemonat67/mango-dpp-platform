@@ -36,7 +36,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8002
 
 ### Renk Paleti
 - **Ana Renk (Green)**: `#005530` - Sürdürülebilirlik ve doğa
-- **İkincil Renk (Red)**: `#dc2626` - Uyarı ve kritik veriler  
+- **İkincil Renk (Red)**: `#D51635` - Marka kırmızısı, uyarı ve CTA butonları  
 - **Navy**: `#02154e` - Güven ve profesyonellik
 - **Beyaz**: Ana arkaplan rengi
 - **Gri Tonları**: Metin ve ikincil elemanlar
