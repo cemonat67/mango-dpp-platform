@@ -293,12 +293,15 @@ async def create_collection(
     return JSONResponse({"success": True, "collection_id": collection_id})
 
 @app.get("/styles")
-async def styles_page(request: Request):
+async def styles_page(request: Request, db: Session = Depends(get_db)):
     """Stiller sayfası"""
+    styles = mango_dpp.get_styles(db)
+    collections = mango_dpp.get_collections(db)
+    
     response = templates.TemplateResponse("styles.html", {
         "request": request,
-        "styles": list(mango_dpp.styles.values()),
-        "collections": list(mango_dpp.collections.values())
+        "styles": styles,
+        "collections": collections
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     return response
@@ -312,7 +315,8 @@ async def create_style(
     target_price: float = Form(...),
     production_location: str = Form(...),
     supplier: str = Form(...),
-    generate_image: bool = Form(False)
+    generate_image: bool = Form(False),
+    db: Session = Depends(get_db)
 ):
     """Yeni stil oluştur"""
     style_id = str(uuid.uuid4())
@@ -323,41 +327,44 @@ async def create_style(
         materials_list, production_location, "sea"
     )
     
-    style = {
-        "id": style_id,
-        "name": name,
-        "collection_id": collection_id,
-        "category": category,
-        "materials": materials_list,
-        "target_price": target_price,
-        "production_location": production_location,
-        "supplier": supplier,
-        "carbon_footprint": carbon_footprint,
-        "created_at": datetime.now().isoformat(),
-        "status": "tasarım",
-        "image_url": None
-    }
+    style = Style(
+        id=style_id,
+        name=name,
+        collection_id=collection_id,
+        category=category,
+        materials=materials_list,
+        target_price=target_price,
+        production_location=production_location,
+        supplier=supplier,
+        carbon_footprint=carbon_footprint,
+        status="tasarım"
+    )
     
     # AI görsel oluştur (istenirse)
     if generate_image and mango_dpp.ai_enabled:
         try:
-            image_path = await mango_dpp.generate_product_image(style)
+            # Style dict oluştur AI için
+            style_dict = {
+                "id": style_id,
+                "name": name,
+                "category": category,
+                "materials": materials_list
+            }
+            image_path = await mango_dpp.generate_product_image(style_dict)
             if image_path:
-                style["image_url"] = image_path
-                style["status"] = "görsel_oluşturuldu"
+                style.image_url = image_path
+                style.status = "görsel_oluşturuldu"
         except Exception as e:
             print(f"Görsel oluşturma hatası: {e}")
     
-    mango_dpp.styles[style_id] = style
-    
-    # Koleksiyona stil ekle
-    if collection_id in mango_dpp.collections:
-        mango_dpp.collections[collection_id]["styles"].append(style_id)
+    db.add(style)
+    db.commit()
+    db.refresh(style)
     
     return JSONResponse({
         "success": True, 
         "style_id": style_id,
-        "image_generated": style.get("image_url") is not None,
+        "image_generated": style.image_url is not None,
         "ai_enabled": mango_dpp.ai_enabled
     })
 
