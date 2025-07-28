@@ -42,9 +42,14 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8002
 - **Gri Tonları**: Metin ve ikincil elemanlar
 
 ### Tipografi
-- **Ana Font**: Inter (Google Fonts)
-- **Türkçe karakter desteği**: ğ, ü, ş, ı, ç, ö
-- **Font Ağırlıkları**: 300, 400, 500, 600, 700, 800
+- **Ana Font**: Arial (System Font)
+- **Türkçe karakter desteği**: ğ, ü, ş, ı, ç, ö tam uyumlu
+- **Font Güvenilirliği**: Tüm sistemlerde aynı görünüm
+
+### Marka Entegrasyonu
+- **Rabateks Logosu**: Header'da entegre edildi
+- **Logo Formatı**: SVG (skalabilir)
+- **Logo Bağlantısı**: rabateks.com'a yönlendirme
 
 ## 📱 Kullanım
 

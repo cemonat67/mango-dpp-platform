@@ -6,10 +6,10 @@
     <title>{% block title %}Mango DPP - Digital Product Platform{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: Arial, sans-serif;
         }
         
         :root {
@@ -98,19 +98,30 @@
                         Mango DPP
                     </a>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/" class="text-white hover:text-green-300 transition-colors">
-                        <i class="fas fa-home mr-1"></i> Dashboard
-                    </a>
-                    <a href="/collections" class="text-white hover:text-green-300 transition-colors">
-                        <i class="fas fa-layer-group mr-1"></i> Koleksiyonlar
-                    </a>
-                    <a href="/styles" class="text-white hover:text-green-300 transition-colors">
-                        <i class="fas fa-tshirt mr-1"></i> Stiller
-                    </a>
-                    <a href="/sustainability" class="text-white hover:text-green-300 transition-colors">
-                        <i class="fas fa-seedling mr-1"></i> Sürdürülebilirlik
-                    </a>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-4">
+                        <a href="/" class="text-white hover:text-green-300 transition-colors">
+                            <i class="fas fa-home mr-1"></i> Dashboard
+                        </a>
+                        <a href="/collections" class="text-white hover:text-green-300 transition-colors">
+                            <i class="fas fa-layer-group mr-1"></i> Koleksiyonlar
+                        </a>
+                        <a href="/styles" class="text-white hover:text-green-300 transition-colors">
+                            <i class="fas fa-tshirt mr-1"></i> Stiller
+                        </a>
+                        <a href="/sustainability" class="text-white hover:text-green-300 transition-colors">
+                            <i class="fas fa-seedling mr-1"></i> Sürdürülebilirlik
+                        </a>
+                    </div>
+                    
+                    <!-- Rabateks Logo -->
+                    <div class="flex items-center">
+                        <a href="https://rabateks.com" target="_blank" class="flex items-center hover:opacity-80 transition-opacity">
+                            <img src="/static/images/rabateks-logo.svg" 
+                                 alt="Rabateks" 
+                                 class="h-10 w-10">
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
