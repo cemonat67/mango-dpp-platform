@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t['carbon_followup_title'] }} - Mango DPP{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-factory text-secondary mr-3"></i>
+                {{ t['carbon_followup_title'] }}
+            </h1>
+            <p class="text-gray-600">{{ t['carbon_followup_subtitle'] }}</p>
+        </div>
+        <a href="/sustainability" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            {{ t['back'] }}
+        </a>
+    </div>
+</div>
+
+<!-- Producer Dashboard Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-secondary-light text-secondary">
+                <i class="fas fa-smog text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">{{ t['monthly_emissions'] }}</p>
+                <p class="text-2xl font-semibold text-secondary">{{ current_month_emissions }} {{ t['tonnes_co2'] }}</p>
+                <p class="text-xs text-gray-500">{{ t['current_month'] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-primary-light text-primary">
+                <i class="fas fa-target text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">{{ t['yearly_target'] }}</p>
+                <p class="text-2xl font-semibold text-primary">{{ yearly_target }} {{ t['tonnes_co2'] }}</p>
+                <p class="text-xs text-gray-500">2024</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-navy-light text-navy">
+                <i class="fas fa-chart-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">{{ t['reduction_progress'] }}</p>
+                <p class="text-2xl font-semibold text-navy">{{ reduction_progress }}{{ t['percentage'] }}</p>
+                <p class="text-xs text-gray-500">{{ t['target_vs_actual'] }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <div class="flex items-center">
+            <div class="p-3 rounded-full bg-primary-light text-primary">
+                <i class="fas fa-industry text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600">{{ t['carbon_intensity'] }}</p>
+                <p class="text-2xl font-semibold text-primary">{{ carbon_intensity }}</p>
+                <p class="text-xs text-gray-500">{{ t['kg_co2'] }} {{ t['per_unit_produced'] }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Energy Mix & Resource Usage -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Energy Mix -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-bolt text-primary mr-2"></i>
+            {{ t['energy_mix'] }}
+        </h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-sun text-primary mr-2"></i>
+                    <span class="text-gray-700">{{ t['solar_power'] }}</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                        <div class="bg-primary h-2 rounded-full" style="width: {{ energy_mix.solar_power }}%"></div>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">{{ energy_mix.solar_power }}{{ t['percentage'] }}</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-plug text-navy mr-2"></i>
+                    <span class="text-gray-700">{{ t['grid_electricity'] }}</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                        <div class="bg-navy h-2 rounded-full" style="width: {{ energy_mix.grid_electricity }}%"></div>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">{{ energy_mix.grid_electricity }}{{ t['percentage'] }}</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-fire text-secondary mr-2"></i>
+                    <span class="text-gray-700">{{ t['natural_gas'] }}</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                        <div class="bg-secondary h-2 rounded-full" style="width: {{ energy_mix.natural_gas }}%"></div>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">{{ energy_mix.natural_gas }}{{ t['percentage'] }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Usage -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-tint text-navy mr-2"></i>
+            {{ t['water_usage'] }} & {{ t['chemical_usage'] }}
+        </h2>
+        
+        <div class="space-y-6">
+            <div class="text-center p-4 bg-navy-light rounded-lg">
+                <div class="text-2xl font-bold text-navy mb-2">{{ water_usage_per_kg }}</div>
+                <p class="text-sm text-navy">{{ t['water_usage'] }}</p>
+                <p class="text-xs text-gray-600">{{ t['liters_per_kg'] }}</p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-3 bg-secondary-light rounded-lg">
+                    <div class="text-lg font-bold text-secondary mb-1">{{ chemical_usage.dye_chemicals }}</div>
+                    <p class="text-xs text-secondary">{{ t['dye_chemicals'] }}</p>
+                    <p class="text-xs text-gray-600">kg/100kg</p>
+                </div>
+                
+                <div class="text-center p-3 bg-primary-light rounded-lg">
+                    <div class="text-lg font-bold text-primary mb-1">{{ chemical_usage.finishing_chemicals }}</div>
+                    <p class="text-xs text-primary">{{ t['finishing_chemicals'] }}</p>
+                    <p class="text-xs text-gray-600">kg/100kg</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Improvement Actions -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-tasks text-secondary mr-2"></i>
+        {{ t['improvement_actions'] }}
+    </h2>
+    
+    <div class="space-y-4">
+        {% for action in improvement_actions %}
+        <div class="border border-gray-200 rounded-lg p-4">
+            <div class="flex items-start justify-between mb-3">
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <h3 class="font-semibold text-gray-900 mr-3">{{ action.title }}</h3>
+                        
+                        <!-- Priority Badge -->
+                        {% if action.priority == 'high' %}
+                            <span class="px-2 py-1 text-xs font-semibold bg-secondary-light text-secondary rounded-full">{{ t['priority_high'] }}</span>
+                        {% elif action.priority == 'medium' %}
+                            <span class="px-2 py-1 text-xs font-semibold bg-navy-light text-navy rounded-full">{{ t['priority_medium'] }}</span>
+                        {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full">{{ t['priority_low'] }}</span>
+                        {% endif %}
+                        
+                        <!-- Status Badge -->
+                        <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full
+                            {% if action.status == 'completed' %}bg-primary-light text-primary
+                            {% elif action.status == 'in_progress' %}bg-navy-light text-navy
+                            {% else %}bg-gray-200 text-gray-700{% endif %}">
+                            {% if action.status == 'completed' %}{{ t['completed'] }}
+                            {% elif action.status == 'in_progress' %}{{ t['in_progress'] }}
+                            {% else %}{{ t['pending'] }}{% endif %}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">{{ action.description }}</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div class="text-center p-2 bg-primary-light rounded">
+                    <div class="font-semibold text-primary">{{ action.expected_reduction }}{{ t['percentage'] }}</div>
+                    <div class="text-xs text-gray-600">CO₂ Azaltım</div>
+                </div>
+                <div class="text-center p-2 bg-navy-light rounded">
+                    <div class="font-semibold text-navy">{{ action.investment }}</div>
+                    <div class="text-xs text-gray-600">{{ t['investment_required'] }}</div>
+                </div>
+                <div class="text-center p-2 bg-secondary-light rounded">
+                    <div class="font-semibold text-secondary">{{ action.payback_months }}</div>
+                    <div class="text-xs text-gray-600">{{ t['payback_period'] }} ({{ t['months'] }})</div>
+                </div>
+                <div class="text-center p-2 bg-gray-100 rounded">
+                    <div class="font-semibold text-gray-700">₺{{ (action.expected_reduction * 1000)|int }}</div>
+                    <div class="text-xs text-gray-600">{{ t['expected_savings'] }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Certification Progress & Supplier Scorecard -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Certification Progress -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-certificate text-primary mr-2"></i>
+            {{ t['certification_progress'] }}
+        </h2>
+        
+        <div class="space-y-4">
+            {% for cert, progress in certifications.items() %}
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ t[cert] }}</span>
+                        <span class="text-sm font-semibold text-gray-900">{{ progress }}{{ t['percentage'] }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full 
+                            {% if progress >= 80 %}bg-primary
+                            {% elif progress >= 50 %}bg-navy
+                            {% else %}bg-secondary{% endif %}" 
+                            style="width: {{ progress }}%"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Supplier Scorecard -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <i class="fas fa-handshake text-navy mr-2"></i>
+            {{ t['supplier_scorecard'] }}
+        </h2>
+        
+        <div class="space-y-3">
+            {% for supplier in supplier_scores %}
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex-1">
+                    <div class="font-medium text-gray-900">{{ supplier.name }}</div>
+                    <div class="text-sm text-gray-600">{{ supplier.category }} - {{ supplier.location }}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-lg font-bold 
+                        {% if supplier.score >= 80 %}text-primary
+                        {% elif supplier.score >= 60 %}text-navy
+                        {% else %}text-secondary{% endif %}">{{ supplier.score }}</div>
+                    <div class="text-xs text-gray-500">/ 100</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Carbon Reduction Roadmap -->
+<div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-route text-secondary mr-2"></i>
+        {{ t['carbon_reduction_roadmap'] }}
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="text-center p-4 bg-primary-light rounded-lg">
+            <div class="p-3 bg-primary rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <i class="fas fa-leaf text-white"></i>
+            </div>
+            <h3 class="font-semibold text-primary mb-2">Q1 2024</h3>
+            <p class="text-sm text-gray-600">LED Aydınlatma ve Su Tasarrufu</p>
+            <p class="text-xs text-primary font-semibold mt-1">-15% hedef</p>
+        </div>
+        
+        <div class="text-center p-4 bg-navy-light rounded-lg">
+            <div class="p-3 bg-navy rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <i class="fas fa-solar-panel text-white"></i>
+            </div>
+            <h3 class="font-semibold text-navy mb-2">Q2 2024</h3>
+            <p class="text-sm text-gray-600">Güneş Enerjisi Geçişi</p>
+            <p class="text-xs text-navy font-semibold mt-1">-30% hedef</p>
+        </div>
+        
+        <div class="text-center p-4 bg-secondary-light rounded-lg">
+            <div class="p-3 bg-secondary rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <i class="fas fa-recycle text-white"></i>
+            </div>
+            <h3 class="font-semibold text-secondary mb-2">Q3 2024</h3>
+            <p class="text-sm text-gray-600">Atık Azaltım ve Geri Dönüşüm</p>
+            <p class="text-xs text-secondary font-semibold mt-1">-40% hedef</p>
+        </div>
+        
+        <div class="text-center p-4 bg-gray-100 rounded-lg">
+            <div class="p-3 bg-gray-600 rounded-full w-12 h-12 mx-auto mb-3 flex items-center justify-center">
+                <i class="fas fa-award text-white"></i>
+            </div>
+            <h3 class="font-semibold text-gray-700 mb-2">Q4 2024</h3>
+            <p class="text-sm text-gray-600">{{ t['carbon_neutral'] }}</p>
+            <p class="text-xs text-gray-700 font-semibold mt-1">-50% hedef</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

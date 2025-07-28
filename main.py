@@ -127,9 +127,7 @@ class MangoDPP:
         nft_data["qr_code"] = self.generate_qr_code(qr_data)
         nft_data["qr_url"] = qr_data
         
-        # NFT'yi sakla
-        self.nfts[nft_id] = nft_data
-        
+        # NFT data is now stored in database by the route handler
         return nft_data
     
     def setup_ai_client(self):
@@ -442,7 +440,7 @@ async def create_style(
 async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
     """Var olan stil için AI görsel oluştur"""
     try:
-        style = db.query(Style).filter(Style.id == int(style_id)).first()
+        style = db.query(Style).filter(Style.id == style_id).first()
         if not style:
             return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
         
@@ -513,7 +511,7 @@ async def generate_nft_passport(
 ):
     """Stil için NFT pasaport oluştur"""
     try:
-        style = db.query(Style).filter(Style.id == int(style_id)).first()
+        style = db.query(Style).filter(Style.id == style_id).first()
         if not style:
             return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
         
@@ -535,10 +533,20 @@ async def generate_nft_passport(
         
         # Create NFT passport in database
         nft_passport = NFTPassport(
+            id=nft_data["id"],
             style_id=style.id,
+            product_code=nft_data["product_code"],
+            name=nft_data["name"],
+            collection_name=nft_data["collection"],
+            materials=nft_data["materials"],
+            production_location=nft_data["production_location"],
+            carbon_footprint=nft_data["carbon_footprint"],
+            certificates=nft_data["certificates"],
+            supplier=nft_data["supplier"],
             blockchain_hash=nft_data["blockchain_hash"],
-            qr_code_data=nft_data["qr_url"],
-            certificates=nft_data["certificates"]
+            qr_code_data=nft_data["qr_code"],
+            qr_url=nft_data["qr_url"],
+            additional_info=additional_info
         )
         db.add(nft_passport)
         db.commit()
@@ -698,6 +706,109 @@ async def production_analysis(request: Request, db: Session = Depends(get_db)):
         "request": request,
         "location_stats": location_stats,
         "best_locations": best_locations,
+        "lang": lang,
+        "t": get_all_texts(lang)
+    })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
+
+@app.get("/sustainability/carbon-followup", response_class=HTMLResponse)
+async def carbon_followup(request: Request, db: Session = Depends(get_db)):
+    """Konfeksiyon üreticisi karbon takibi"""
+    lang = request.cookies.get("lang", "tr")
+    styles = mango_dpp.get_styles(db)
+    
+    # Aylık karbon emisyonu verisi (örnek data)
+    current_month_emissions = sum([style.carbon_footprint or 0 for style in styles])
+    yearly_target = current_month_emissions * 12 * 0.8  # %20 azaltım hedefi
+    reduction_progress = min(95, (yearly_target - current_month_emissions * 12) / yearly_target * 100) if yearly_target > 0 else 0
+    
+    # Enerji karışımı (örnek data)
+    energy_mix = {
+        "solar_power": 35,
+        "grid_electricity": 50,
+        "natural_gas": 15
+    }
+    
+    # Su kullanımı ve kimyasal kullanımı (örnek data)
+    water_usage_per_kg = 85.2
+    chemical_usage = {
+        "dye_chemicals": 2.5,
+        "finishing_chemicals": 1.8
+    }
+    
+    # İyileştirme aksiyonları (örnek data)
+    improvement_actions = [
+        {
+            "title": "LED Aydınlatma Geçişi" if lang == "tr" else "LED Lighting Transition",
+            "description": "Tüm fabrika aydınlatmasını LED'e çevirme" if lang == "tr" else "Convert all factory lighting to LED",
+            "priority": "high",
+            "status": "in_progress",
+            "expected_reduction": 12,
+            "investment": "₺150,000",
+            "payback_months": 18
+        },
+        {
+            "title": "Güneş Paneli Kurulumu" if lang == "tr" else "Solar Panel Installation",
+            "description": "Çatıya 500kW güneş paneli sistemi" if lang == "tr" else "500kW solar panel system on roof",
+            "priority": "high",
+            "status": "pending",
+            "expected_reduction": 35,
+            "investment": "₺2,500,000",
+            "payback_months": 48
+        },
+        {
+            "title": "Su Geri Dönüşüm Sistemi" if lang == "tr" else "Water Recycling System",
+            "description": "Boyahane atık suyunu arıtma ve tekrar kullanma" if lang == "tr" else "Treat and reuse dyehouse wastewater",
+            "priority": "medium",
+            "status": "completed",
+            "expected_reduction": 8,
+            "investment": "₺800,000",
+            "payback_months": 36
+        },
+        {
+            "title": "Çevre Dostu Boyar Madde" if lang == "tr" else "Eco-friendly Dyes",
+            "description": "Düşük etkili doğal boyar maddelere geçiş" if lang == "tr" else "Transition to low-impact natural dyes",
+            "priority": "low",
+            "status": "in_progress",
+            "expected_reduction": 5,
+            "investment": "₺200,000",
+            "payback_months": 24
+        }
+    ]
+    
+    # Sertifikasyon ilerlemesi (örnek data)
+    certifications = {
+        "iso14001": 85,
+        "oeko_tex": 60,
+        "gots_certification": 40,
+        "carbon_neutral": 25
+    }
+    
+    # Karbon yoğunluğu hesaplama
+    total_production = len(styles) * 1000  # varsayılan üretim miktarı
+    carbon_intensity = current_month_emissions / (total_production / 1000) if total_production > 0 else 0
+    
+    # Tedarikçi skorları (örnek data) 
+    supplier_scores = [
+        {"name": "ABC Tekstil", "score": 85, "category": "İplik", "location": "Bursa"},
+        {"name": "XYZ Dokuma", "score": 78, "category": "Kumaş", "location": "İstanbul"},
+        {"name": "DEF Kimya", "score": 62, "category": "Boyar Madde", "location": "İzmir"},
+        {"name": "GHI Aksesuar", "score": 91, "category": "Düğme/Fermuar", "location": "Çorum"}
+    ]
+    
+    response = templates.TemplateResponse("carbon_followup.html", {
+        "request": request,
+        "current_month_emissions": round(current_month_emissions, 2),
+        "yearly_target": round(yearly_target, 2),
+        "reduction_progress": round(reduction_progress, 1),
+        "energy_mix": energy_mix,
+        "water_usage_per_kg": water_usage_per_kg,
+        "chemical_usage": chemical_usage,
+        "improvement_actions": improvement_actions,
+        "certifications": certifications,
+        "carbon_intensity": round(carbon_intensity, 2),
+        "supplier_scores": supplier_scores,
         "lang": lang,
         "t": get_all_texts(lang)
     })
