@@ -999,7 +999,7 @@ async def get_stats(db: Session = Depends(get_db)):
 
 @app.post("/api/delete-all")
 async def delete_all_data(db: Session = Depends(get_db)):
-    """Delete all data from database - Fresh restart"""
+    """Delete all data from database - Fresh restart (Force deploy)"""
     try:
         # Delete all NFT passports
         db.query(NFTPassport).delete()
