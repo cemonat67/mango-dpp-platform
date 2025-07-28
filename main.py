@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request, Form, File, UploadFile
+from fastapi import FastAPI, Request, Form, File, UploadFile, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 import qrcode
 import io
 import base64
@@ -18,6 +19,10 @@ import openai
 import keyring
 import asyncio
 import aiohttp
+
+# Database imports
+from database import get_db, init_db
+from models import Collection, Style, NFTPassport, Supplier
 
 app = FastAPI(title="Mango DPP - Digital Product Platform")
 
@@ -36,23 +41,21 @@ os.makedirs("templates", exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# In-memory database (gerçek uygulamada PostgreSQL kullanılacak)
-collections_db = {}
-styles_db = {}
-samples_db = {}
-suppliers_db = {}
-nft_db = {}
-carbon_db = {}
+# Initialize database on startup
+init_db()
 
 class MangoDPP:
     def __init__(self):
-        self.collections = collections_db
-        self.styles = styles_db
-        self.samples = samples_db
-        self.suppliers = suppliers_db
-        self.nfts = nft_db
-        self.carbon = carbon_db
         self.setup_ai_client()
+    
+    def get_collections(self, db: Session):
+        return db.query(Collection).all()
+    
+    def get_styles(self, db: Session):
+        return db.query(Style).all()
+    
+    def get_nfts(self, db: Session):
+        return db.query(NFTPassport).all()
         
     def generate_qr_code(self, data: str) -> str:
         """QR kod oluştur ve base64 string olarak döndür"""
@@ -232,28 +235,34 @@ class MangoDPP:
 mango_dpp = MangoDPP()
 
 @app.get("/")
-async def dashboard(request: Request):
+async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Ana dashboard"""
+    collections = mango_dpp.get_collections(db)
+    styles = mango_dpp.get_styles(db)
+    nfts = mango_dpp.get_nfts(db)
+    
     stats = {
-        "total_collections": len(mango_dpp.collections),
-        "total_styles": len(mango_dpp.styles),
-        "total_samples": len(mango_dpp.samples),
-        "total_nfts": len(mango_dpp.nfts)
+        "total_collections": len(collections),
+        "total_styles": len(styles),
+        "total_samples": 0,  # Placeholder
+        "total_nfts": len(nfts)
     }
+    
     response = templates.TemplateResponse("dashboard.html", {
         "request": request, 
         "stats": stats,
-        "collections": list(mango_dpp.collections.values())[:5]
+        "collections": collections[:5]
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     return response
 
 @app.get("/collections")
-async def collections_page(request: Request):
+async def collections_page(request: Request, db: Session = Depends(get_db)):
     """Koleksiyonlar sayfası"""
+    collections = mango_dpp.get_collections(db)
     response = templates.TemplateResponse("collections.html", {
         "request": request,
-        "collections": list(mango_dpp.collections.values())
+        "collections": collections
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     return response
@@ -263,20 +272,24 @@ async def create_collection(
     name: str = Form(...),
     season: str = Form(...),
     year: int = Form(...),
-    description: str = Form(...)
+    description: str = Form(...),
+    db: Session = Depends(get_db)
 ):
     """Yeni koleksiyon oluştur"""
     collection_id = str(uuid.uuid4())
-    collection = {
-        "id": collection_id,
-        "name": name,
-        "season": season,
-        "year": year,
-        "description": description,
-        "created_at": datetime.now().isoformat(),
-        "styles": []
-    }
-    mango_dpp.collections[collection_id] = collection
+    
+    collection = Collection(
+        id=collection_id,
+        name=name,
+        season=season,
+        year=year,
+        description=description
+    )
+    
+    db.add(collection)
+    db.commit()
+    db.refresh(collection)
+    
     return JSONResponse({"success": True, "collection_id": collection_id})
 
 @app.get("/styles")
@@ -563,14 +576,18 @@ async def production_analysis(request: Request):
     })
 
 @app.get("/api/stats")
-async def get_stats():
+async def get_stats(db: Session = Depends(get_db)):
     """API: İstatistikler"""
+    collections = mango_dpp.get_collections(db)
+    styles = mango_dpp.get_styles(db)
+    nfts = mango_dpp.get_nfts(db)
+    
     return {
-        "collections": len(mango_dpp.collections),
-        "styles": len(mango_dpp.styles),
-        "samples": len(mango_dpp.samples),
-        "nfts": len(mango_dpp.nfts),
-        "total_carbon": sum([s.get("carbon_footprint", 0) for s in mango_dpp.styles.values()])
+        "collections": len(collections),
+        "styles": len(styles),
+        "samples": 0,
+        "nfts": len(nfts),
+        "total_carbon": sum([s.carbon_footprint or 0 for s in styles])
     }
 
 if __name__ == "__main__":
