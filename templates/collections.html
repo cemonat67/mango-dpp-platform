@@ -56,7 +56,7 @@
         <p class="text-gray-500 mb-6">İlk koleksiyonunuzu oluşturmak için başlayın.</p>
         <button onclick="showCreateModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
             <i class="fas fa-plus mr-2"></i>
-            İlk Koleksiyonu Oluştur
+            {{ t['create_first_collection'] if t else "Create First Collection" }}
         </button>
     </div>
     {% endif %}

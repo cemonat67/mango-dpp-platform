@@ -264,7 +264,7 @@
     <p class="text-gray-500 mb-6">{{ t['create_styles_for_analysis'] }}</p>
     <a href="/styles" class="bg-primary text-white px-6 py-3 rounded-lg btn-green-special transition-colors">
         <i class="fas fa-plus mr-2"></i>
-        İlk Stili Oluştur
+        {{ t['create_first_style'] if t else "Create First Style" }}
     </a>
 </div>
 {% endif %}

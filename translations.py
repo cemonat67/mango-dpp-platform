@@ -49,6 +49,7 @@ translations = {
         "back": "Geri",
         "generate": "Oluştur",
         "nft_create": "NFT Oluştur",
+        "select_season": "Sezon Seçin",
         
         # Collections
         "collections_title": "Koleksiyonlar",
@@ -321,6 +322,7 @@ translations = {
         "back": "Back",
         "generate": "Generate",
         "nft_create": "Create NFT",
+        "select_season": "Select Season",
         
         # Collections
         "collections_title": "Collections",
