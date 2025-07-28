@@ -13,6 +13,10 @@ import os
 from web3 import Web3
 from eth_account import Account
 import hashlib
+import openai
+import keyring
+import asyncio
+import aiohttp
 
 app = FastAPI(title="Mango DPP - Digital Product Platform")
 
@@ -38,6 +42,7 @@ class MangoDPP:
         self.suppliers = suppliers_db
         self.nfts = nft_db
         self.carbon = carbon_db
+        self.setup_ai_client()
         
     def generate_qr_code(self, data: str) -> str:
         """QR kod oluştur ve base64 string olarak döndür"""
@@ -79,6 +84,111 @@ class MangoDPP:
         self.nfts[nft_id] = nft_data
         
         return nft_data
+    
+    def setup_ai_client(self):
+        """AI client kurulumu"""
+        try:
+            # Keyring'den OpenAI API key'i al
+            api_key = None
+            for key_name in ['OPENAI_API_KEY', 'openai_api_key', 'openai-api-key']:
+                try:
+                    api_key = keyring.get_password("memex", key_name)
+                    if api_key:
+                        break
+                except:
+                    continue
+            
+            if api_key:
+                self.openai_client = openai.OpenAI(api_key=api_key)
+                self.ai_enabled = True
+            else:
+                self.ai_enabled = False
+                print("OpenAI API key bulunamadı. AI görsel oluşturma devre dışı.")
+        except Exception as e:
+            self.ai_enabled = False
+            print(f"AI client kurulum hatası: {e}")
+    
+    async def generate_product_image(self, style_data: dict) -> Optional[str]:
+        """AI ile ürün görseli oluştur"""
+        if not self.ai_enabled:
+            return None
+            
+        try:
+            # Ürün tanımını oluştur
+            prompt = self.create_image_prompt(style_data)
+            
+            # OpenAI DALL-E ile görsel oluştur
+            response = self.openai_client.images.generate(
+                model="dall-e-3",
+                prompt=prompt,
+                size="1024x1024",
+                quality="standard",
+                n=1,
+            )
+            
+            # Görsel URL'sini al
+            image_url = response.data[0].url
+            
+            # Görseli indir ve kaydet
+            image_path = await self.download_and_save_image(image_url, style_data["id"])
+            
+            return image_path
+            
+        except Exception as e:
+            print(f"AI görsel oluşturma hatası: {e}")
+            return None
+    
+    def create_image_prompt(self, style_data: dict) -> str:
+        """Stil verilerinden görsel prompt'u oluştur"""
+        category = style_data.get("category", "giyim")
+        materials = ", ".join(style_data.get("materials", []))
+        name = style_data.get("name", "ürün")
+        
+        # Kategori bazlı prompt oluştur
+        category_prompts = {
+            "Üst Giyim": "fashionable top, shirt, blouse, sweater",
+            "Alt Giyim": "stylish pants, trousers, jeans, skirt",
+            "Elbise": "elegant dress, fashionable dress",
+            "Dış Giyim": "jacket, coat, outerwear",
+            "Aksesuar": "fashion accessory, bag, scarf"
+        }
+        
+        base_prompt = category_prompts.get(category, "fashion item")
+        
+        prompt = f"""
+        Professional fashion photography of a {base_prompt} called '{name}'.
+        Made from {materials}.
+        Clean white background, studio lighting, high-quality fashion photography.
+        Modern, sustainable fashion design.
+        Commercial product photography style.
+        No text or watermarks.
+        """
+        
+        return prompt.strip()
+    
+    async def download_and_save_image(self, image_url: str, style_id: str) -> str:
+        """Görseli indir ve kaydet"""
+        try:
+            os.makedirs("static/images", exist_ok=True)
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image_url) as response:
+                    if response.status == 200:
+                        image_data = await response.read()
+                        
+                        # Dosya yolunu oluştur
+                        filename = f"product_{style_id}.png"
+                        filepath = f"static/images/{filename}"
+                        
+                        # Dosyayı kaydet
+                        with open(filepath, 'wb') as f:
+                            f.write(image_data)
+                        
+                        return f"/static/images/{filename}"
+            
+        except Exception as e:
+            print(f"Görsel indirme hatası: {e}")
+            return None
     
     def calculate_carbon_footprint(self, materials: List[str], production_location: str, transport: str) -> float:
         """Karbon ayak izi hesapla (basitleştirilmiş)"""
@@ -172,7 +282,8 @@ async def create_style(
     materials: str = Form(...),
     target_price: float = Form(...),
     production_location: str = Form(...),
-    supplier: str = Form(...)
+    supplier: str = Form(...),
+    generate_image: bool = Form(False)
 ):
     """Yeni stil oluştur"""
     style_id = str(uuid.uuid4())
@@ -194,8 +305,19 @@ async def create_style(
         "supplier": supplier,
         "carbon_footprint": carbon_footprint,
         "created_at": datetime.now().isoformat(),
-        "status": "tasarım"
+        "status": "tasarım",
+        "image_url": None
     }
+    
+    # AI görsel oluştur (istenirse)
+    if generate_image and mango_dpp.ai_enabled:
+        try:
+            image_path = await mango_dpp.generate_product_image(style)
+            if image_path:
+                style["image_url"] = image_path
+                style["status"] = "görsel_oluşturuldu"
+        except Exception as e:
+            print(f"Görsel oluşturma hatası: {e}")
     
     mango_dpp.styles[style_id] = style
     
@@ -203,7 +325,41 @@ async def create_style(
     if collection_id in mango_dpp.collections:
         mango_dpp.collections[collection_id]["styles"].append(style_id)
     
-    return JSONResponse({"success": True, "style_id": style_id})
+    return JSONResponse({
+        "success": True, 
+        "style_id": style_id,
+        "image_generated": style.get("image_url") is not None,
+        "ai_enabled": mango_dpp.ai_enabled
+    })
+
+@app.post("/generate-image/{style_id}")
+async def generate_style_image(style_id: str):
+    """Var olan stil için AI görsel oluştur"""
+    if style_id not in mango_dpp.styles:
+        return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+    
+    if not mango_dpp.ai_enabled:
+        return JSONResponse({"error": "AI görsel oluşturma devre dışı. OpenAI API key gerekli."}, status_code=400)
+    
+    style = mango_dpp.styles[style_id]
+    
+    try:
+        image_path = await mango_dpp.generate_product_image(style)
+        if image_path:
+            style["image_url"] = image_path
+            style["status"] = "görsel_oluşturuldu"
+            mango_dpp.styles[style_id] = style
+            
+            return JSONResponse({
+                "success": True,
+                "image_url": image_path,
+                "message": "Görsel başarıyla oluşturuldu"
+            })
+        else:
+            return JSONResponse({"error": "Görsel oluşturulamadı"}, status_code=500)
+            
+    except Exception as e:
+        return JSONResponse({"error": f"Görsel oluşturma hatası: {str(e)}"}, status_code=500)
 
 @app.get("/passport/{nft_id}", response_class=HTMLResponse)
 async def nft_passport(request: Request, nft_id: str):
@@ -267,12 +423,127 @@ async def sustainability_page(request: Request):
         key=lambda x: x.get("carbon_footprint", 0)
     )[:5]
     
+    # Karbon kategorilerine göre dağılım
+    low_carbon_count = len([s for s in mango_dpp.styles.values() if s.get("carbon_footprint", 0) < 3])
+    medium_carbon_count = len([s for s in mango_dpp.styles.values() if 3 <= s.get("carbon_footprint", 0) <= 5])
+    high_carbon_count = len([s for s in mango_dpp.styles.values() if s.get("carbon_footprint", 0) > 5])
+    
+    # Malzeme analizi
+    material_analysis = {}
+    for style in mango_dpp.styles.values():
+        for material in style.get("materials", []):
+            if material not in material_analysis:
+                material_analysis[material] = {"count": 0, "total_carbon": 0}
+            material_analysis[material]["count"] += 1
+            material_analysis[material]["total_carbon"] += style.get("carbon_footprint", 0)
+    
+    # Ortalama karbon hesapla
+    for material in material_analysis:
+        material_analysis[material]["avg_carbon"] = round(
+            material_analysis[material]["total_carbon"] / material_analysis[material]["count"], 2
+        )
+    
     return templates.TemplateResponse("sustainability.html", {
         "request": request,
         "total_carbon": round(total_carbon, 2),
         "avg_carbon": round(avg_carbon, 2),
         "low_carbon_styles": low_carbon_styles,
-        "total_styles": len(mango_dpp.styles)
+        "total_styles": len(mango_dpp.styles),
+        "low_carbon_count": low_carbon_count,
+        "medium_carbon_count": medium_carbon_count,
+        "high_carbon_count": high_carbon_count,
+        "material_analysis": material_analysis
+    })
+
+@app.get("/sustainability/materials", response_class=HTMLResponse)
+async def materials_analysis(request: Request):
+    """Malzeme bazlı sürdürülebilirlik analizi"""
+    material_stats = {}
+    
+    for style in mango_dpp.styles.values():
+        for material in style.get("materials", []):
+            if material not in material_stats:
+                material_stats[material] = {
+                    "styles": [],
+                    "total_carbon": 0,
+                    "avg_carbon": 0,
+                    "usage_count": 0,
+                    "sustainability_score": 0
+                }
+            
+            material_stats[material]["styles"].append(style)
+            material_stats[material]["total_carbon"] += style.get("carbon_footprint", 0)
+            material_stats[material]["usage_count"] += 1
+    
+    # Sürdürülebilirlik skorları (basitleştirilmiş)
+    sustainability_scores = {
+        "organik_pamuk": 9, "keten": 8, "yün": 6, "pamuk": 5,
+        "ipek": 4, "polyester": 3, "naylon": 2, "akrilik": 1
+    }
+    
+    for material in material_stats:
+        if material_stats[material]["usage_count"] > 0:
+            material_stats[material]["avg_carbon"] = round(
+                material_stats[material]["total_carbon"] / material_stats[material]["usage_count"], 2
+            )
+        material_stats[material]["sustainability_score"] = sustainability_scores.get(
+            material.lower(), 5
+        )
+    
+    # En iyi ve en kötü malzemeler
+    best_materials = sorted(
+        material_stats.items(),
+        key=lambda x: (x[1]["sustainability_score"], -x[1]["avg_carbon"]),
+        reverse=True
+    )[:5]
+    
+    worst_materials = sorted(
+        material_stats.items(),
+        key=lambda x: (x[1]["sustainability_score"], -x[1]["avg_carbon"])
+    )[:5]
+    
+    return templates.TemplateResponse("materials_analysis.html", {
+        "request": request,
+        "material_stats": material_stats,
+        "best_materials": best_materials,
+        "worst_materials": worst_materials
+    })
+
+@app.get("/sustainability/production", response_class=HTMLResponse)
+async def production_analysis(request: Request):
+    """Üretim lokasyonu bazlı analiz"""
+    location_stats = {}
+    
+    for style in mango_dpp.styles.values():
+        location = style.get("production_location", "Bilinmiyor")
+        if location not in location_stats:
+            location_stats[location] = {
+                "styles": [],
+                "total_carbon": 0,
+                "avg_carbon": 0,
+                "count": 0
+            }
+        
+        location_stats[location]["styles"].append(style)
+        location_stats[location]["total_carbon"] += style.get("carbon_footprint", 0)
+        location_stats[location]["count"] += 1
+    
+    for location in location_stats:
+        if location_stats[location]["count"] > 0:
+            location_stats[location]["avg_carbon"] = round(
+                location_stats[location]["total_carbon"] / location_stats[location]["count"], 2
+            )
+    
+    # En iyi ve en kötü lokasyonlar
+    best_locations = sorted(
+        location_stats.items(),
+        key=lambda x: x[1]["avg_carbon"]
+    )[:5]
+    
+    return templates.TemplateResponse("production_analysis.html", {
+        "request": request,
+        "location_stats": location_stats,
+        "best_locations": best_locations
     })
 
 @app.get("/api/stats")

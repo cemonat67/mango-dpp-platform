@@ -21,12 +21,28 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for style in styles %}
     <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+        <!-- AI Generated Image -->
+        {% if style.image_url %}
+        <div class="mb-4">
+            <img src="{{ style.image_url }}" alt="{{ style.name }}" class="w-full h-48 object-cover rounded-lg">
+            <div class="mt-2 flex items-center text-xs text-purple-600">
+                <i class="fas fa-robot mr-1"></i>
+                AI ile oluşturuldu
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="flex justify-between items-start mb-4">
             <div>
                 <h3 class="text-lg font-semibold text-gray-900">{{ style.name }}</h3>
                 <p class="text-sm text-gray-600">{{ style.category }}</p>
             </div>
             <div class="flex items-center space-x-2">
+                {% if style.image_url %}
+                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                    <i class="fas fa-robot mr-1"></i>AI
+                </span>
+                {% endif %}
                 {% if style.nft_id %}
                 <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full nft-glow">
                     <i class="fas fa-certificate mr-1"></i>NFT
@@ -62,6 +78,11 @@
                 {{ style.created_at[:10] }}
             </span>
             <div class="flex space-x-2">
+                {% if not style.image_url %}
+                <button onclick="generateImage('{{ style.id }}')" class="bg-blue-100 text-blue-600 px-3 py-1 rounded text-xs hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-robot mr-1"></i>AI Görsel
+                </button>
+                {% endif %}
                 {% if style.nft_id %}
                 <button onclick="viewNFT('{{ style.nft_id }}')" class="bg-purple-100 text-purple-600 px-3 py-1 rounded text-xs hover:bg-purple-200 transition-colors">
                     <i class="fas fa-eye mr-1"></i>NFT Görüntüle
@@ -149,10 +170,21 @@
                     </select>
                 </div>
                 
-                <div class="mb-6">
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tedarikçi</label>
                     <input type="text" name="supplier" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
+            </div>
+            
+            <div class="mb-6">
+                <label class="flex items-center">
+                    <input type="checkbox" name="generate_image" value="true" class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                    <span class="ml-2 text-sm text-gray-700">
+                        <i class="fas fa-robot text-purple-600 mr-1"></i>
+                        AI ile ürün görseli oluştur (DALL-E 3)
+                    </span>
+                </label>
+                <p class="text-xs text-gray-500 mt-1">OpenAI API key gereklidir. Görsel oluşturma birkaç saniye sürebilir.</p>
             </div>
             
             <div class="flex justify-end space-x-4">
@@ -275,6 +307,25 @@ async function createNFT(event) {
 
 function viewNFT(nftId) {
     window.open(`/passport/${nftId}`, '_blank');
+}
+
+async function generateImage(styleId) {
+    try {
+        const response = await fetch(`/generate-image/${styleId}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('AI görsel başarıyla oluşturuldu!');
+            location.reload();
+        } else {
+            alert('Görsel oluşturulurken hata: ' + (result.error || 'Bilinmeyen hata'));
+        }
+    } catch (error) {
+        alert('Bir hata oluştu: ' + error.message);
+    }
 }
 
 // Modal dışına tıklandığında kapat

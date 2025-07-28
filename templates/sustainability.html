@@ -131,6 +131,66 @@
     </div>
 </div>
 
+<!-- Detail Analysis Links -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <a href="/sustainability/materials" class="bg-white rounded-lg shadow-md p-6 card-hover block group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-green-100 rounded-full">
+                <i class="fas fa-cut text-green-600 text-xl"></i>
+            </div>
+            <i class="fas fa-arrow-right text-gray-400 group-hover:text-blue-600 transition-colors"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Malzeme Analizi</h3>
+        <p class="text-gray-600 text-sm">Malzeme bazlı karbon ayak izi ve sürdürülebilirlik skorları detaylı analizi</p>
+        <div class="mt-3 flex items-center text-sm text-blue-600">
+            <span>Detaylı analiz için tıklayın</span>
+            <i class="fas fa-external-link-alt ml-2"></i>
+        </div>
+    </a>
+
+    <a href="/sustainability/production" class="bg-white rounded-lg shadow-md p-6 card-hover block group">
+        <div class="flex items-center justify-between mb-4">
+            <div class="p-3 bg-orange-100 rounded-full">
+                <i class="fas fa-industry text-orange-600 text-xl"></i>
+            </div>
+            <i class="fas fa-arrow-right text-gray-400 group-hover:text-blue-600 transition-colors"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">Üretim Lokasyonu Analizi</h3>
+        <p class="text-gray-600 text-sm">Üretim merkezleri bazında çevresel etki ve optimizasyon önerileri</p>
+        <div class="mt-3 flex items-center text-sm text-blue-600">
+            <span>Detaylı analiz için tıklayın</span>
+            <i class="fas fa-external-link-alt ml-2"></i>
+        </div>
+    </a>
+</div>
+
+<!-- Malzeme Özeti -->
+{% if material_analysis %}
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        <i class="fas fa-cut text-green-600 mr-2"></i>
+        Malzeme Kullanım Özeti
+    </h2>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for material, data in material_analysis.items() %}
+        <div class="text-center p-3 bg-gray-50 rounded-lg">
+            <div class="text-lg font-bold text-gray-900">{{ data.count }}</div>
+            <div class="text-xs text-gray-600 capitalize">{{ material }}</div>
+            <div class="text-xs text-green-600 font-semibold mt-1">{{ data.avg_carbon }}kg CO₂</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4 text-center">
+        <a href="/sustainability/materials" class="text-blue-600 hover:text-blue-800 text-sm">
+            <i class="fas fa-arrow-right mr-1"></i>
+            Tüm malzemelerin detaylı analizini görüntüle
+        </a>
+    </div>
+</div>
+{% endif %}
+
 <!-- Sustainability Recommendations -->
 <div class="bg-white rounded-lg shadow-md p-6">
     <h2 class="text-xl font-semibold text-gray-900 mb-4">
