@@ -468,12 +468,31 @@ async def generate_style_image(style_id: str):
         return JSONResponse({"error": f"Görsel oluşturma hatası: {str(e)}"}, status_code=500)
 
 @app.get("/passport/{nft_id}", response_class=HTMLResponse)
-async def nft_passport(request: Request, nft_id: str):
+async def nft_passport(request: Request, nft_id: str, db: Session = Depends(get_db)):
     """NFT dijital pasaport görüntüle"""
-    if nft_id not in mango_dpp.nfts:
+    # Try to find NFT passport by the nft_id (which should be stored somewhere)
+    # For now, let's find it by blockchain_hash or create a lookup
+    nft_passport = db.query(NFTPassport).filter(NFTPassport.blockchain_hash.contains(nft_id)).first()
+    
+    if not nft_passport:
         return templates.TemplateResponse("404.html", {"request": request})
     
-    nft_data = mango_dpp.nfts[nft_id]
+    style = db.query(Style).filter(Style.id == nft_passport.style_id).first()
+    collection = db.query(Collection).filter(Collection.id == style.collection_id).first() if style else None
+    
+    nft_data = {
+        "id": nft_id,
+        "name": style.name if style else "",
+        "collection": collection.name if collection else "",
+        "materials": style.materials if style and style.materials else [],
+        "production_location": style.production_location if style else "",
+        "carbon_footprint": style.carbon_footprint if style else 0,
+        "certificates": nft_passport.certificates if nft_passport.certificates else [],
+        "blockchain_hash": nft_passport.blockchain_hash,
+        "qr_code": f"data:image/png;base64,{nft_passport.qr_code_data}" if nft_passport.qr_code_data else "",
+        "qr_url": f"https://mango-dpp-platform-production.up.railway.app/passport/{nft_id}"
+    }
+    
     return templates.TemplateResponse("passport.html", {
         "request": request,
         "nft": nft_data
@@ -483,39 +502,49 @@ async def nft_passport(request: Request, nft_id: str):
 async def generate_nft_passport(
     style_id: str = Form(...),
     certificates: str = Form(""),
-    additional_info: str = Form("")
+    additional_info: str = Form(""),
+    db: Session = Depends(get_db)
 ):
     """Stil için NFT pasaport oluştur"""
-    if style_id not in mango_dpp.styles:
-        return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+    try:
+        style = db.query(Style).filter(Style.id == int(style_id)).first()
+        if not style:
+            return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+        
+        collection = db.query(Collection).filter(Collection.id == style.collection_id).first()
     
-    style = mango_dpp.styles[style_id]
-    collection = mango_dpp.collections.get(style["collection_id"], {})
+        product_data = {
+            "code": f"MNG-{style_id[:8]}",
+            "name": style.name,
+            "collection": collection.name if collection else "",
+            "materials": style.materials if style.materials else [],
+            "production_location": style.production_location or "",
+            "carbon_footprint": style.carbon_footprint or 0,
+            "certificates": [c.strip() for c in certificates.split(",") if c.strip()],
+            "supplier": style.supplier or "",
+            "additional_info": additional_info
+        }
+        
+        nft_data = mango_dpp.create_nft_passport(product_data)
+        
+        # Create NFT passport in database
+        nft_passport = NFTPassport(
+            style_id=style.id,
+            blockchain_hash=nft_data["blockchain_hash"],
+            qr_code_data=nft_data["qr_url"],
+            certificates=nft_data["certificates"]
+        )
+        db.add(nft_passport)
+        db.commit()
     
-    product_data = {
-        "code": f"MNG-{style_id[:8]}",
-        "name": style["name"],
-        "collection": collection.get("name", ""),
-        "materials": style["materials"],
-        "production_location": style["production_location"],
-        "carbon_footprint": style["carbon_footprint"],
-        "certificates": [c.strip() for c in certificates.split(",") if c.strip()],
-        "supplier": style["supplier"],
-        "additional_info": additional_info
-    }
-    
-    nft_data = mango_dpp.create_nft_passport(product_data)
-    
-    # Stili güncelle
-    mango_dpp.styles[style_id]["nft_id"] = nft_data["id"]
-    mango_dpp.styles[style_id]["status"] = "nft_oluşturuldu"
-    
-    return JSONResponse({
-        "success": True,
-        "nft_id": nft_data["id"],
-        "qr_code": nft_data["qr_code"],
-        "passport_url": nft_data["qr_url"]
-    })
+        return JSONResponse({
+            "success": True,
+            "nft_id": nft_data["id"],
+            "qr_code": nft_data["qr_code"],
+            "passport_url": nft_data["qr_url"]
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
 
 @app.get("/sustainability")
 async def sustainability_page(request: Request, db: Session = Depends(get_db)):
