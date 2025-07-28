@@ -474,9 +474,8 @@ async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
 @app.get("/passport/{nft_id}", response_class=HTMLResponse)
 async def nft_passport(request: Request, nft_id: str, db: Session = Depends(get_db)):
     """NFT dijital pasaport görüntüle"""
-    # Try to find NFT passport by the nft_id (which should be stored somewhere)
-    # For now, let's find it by blockchain_hash or create a lookup
-    nft_passport = db.query(NFTPassport).filter(NFTPassport.blockchain_hash.contains(nft_id)).first()
+    # Find NFT passport by its ID
+    nft_passport = db.query(NFTPassport).filter(NFTPassport.id == nft_id).first()
     
     if not nft_passport:
         return templates.TemplateResponse("404.html", {"request": request})
