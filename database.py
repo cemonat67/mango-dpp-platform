@@ -6,11 +6,16 @@ from models import Base
 # Database URL - SQLite for local development, PostgreSQL for production
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./mango_dpp.db")
 
-# Fix for SQLite URL format
+# Fix for SQLite URL format with UTF-8 encoding
 if DATABASE_URL.startswith("sqlite:///"):
-    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        DATABASE_URL, 
+        connect_args={
+            "check_same_thread": False
+        }
+    )
 else:
-    # PostgreSQL or other databases
+    # PostgreSQL or other databases  
     engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

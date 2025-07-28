@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+import urllib.parse
 from sqlalchemy.orm import Session
 import qrcode
 import io
@@ -43,6 +44,38 @@ templates = Jinja2Templates(directory="templates")
 
 # Initialize database on startup
 init_db()
+
+def fix_turkish_encoding(text):
+    """Fix Turkish character encoding issues"""
+    if not text:
+        return text
+    
+    # Common Turkish character fixes - comprehensive mapping
+    replacements = {
+        'Ä°': 'İ',  # Capital I with dot
+        'Ä±': 'ı',  # Lowercase dotless i
+        'Ã¼': 'ü',  # u with umlaut
+        'Ã–': 'Ö',  # Capital O with umlaut
+        'Ã¶': 'ö',  # o with umlaut
+        'Ã‡': 'Ç',  # Capital C with cedilla
+        'Ã§': 'ç',  # c with cedilla
+        'Åž': 'Ş',  # Capital S with cedilla
+        'ÅŸ': 'ş',  # s with cedilla
+        'Å ': 'Ş',  # Alternative Capital S with cedilla
+        'Å¡': 'ş',  # Alternative s with cedilla
+        'Åı': 'Şı', # Specific combination
+        'Åık': 'Şık', # Common word
+        'Äž': 'Ğ',  # Capital G with breve
+        'ÄŸ': 'ğ',  # g with breve
+        'GÃ¶z': 'Göz',  # Common word
+        'alÄ±cÄ±': 'alıcı',  # Common word
+    }
+    
+    fixed_text = text
+    for wrong, correct in replacements.items():
+        fixed_text = fixed_text.replace(wrong, correct)
+    
+    return fixed_text
 
 class MangoDPP:
     def __init__(self):
@@ -278,6 +311,11 @@ async def create_collection(
     """Yeni koleksiyon oluştur"""
     collection_id = str(uuid.uuid4())
     
+    # Fix Turkish character encoding
+    name = fix_turkish_encoding(name)
+    season = fix_turkish_encoding(season)
+    description = fix_turkish_encoding(description)
+    
     collection = Collection(
         id=collection_id,
         name=name,
@@ -320,6 +358,14 @@ async def create_style(
 ):
     """Yeni stil oluştur"""
     style_id = str(uuid.uuid4())
+    
+    # Fix Turkish character encoding
+    name = fix_turkish_encoding(name)
+    category = fix_turkish_encoding(category)
+    materials = fix_turkish_encoding(materials)
+    production_location = fix_turkish_encoding(production_location)
+    supplier = fix_turkish_encoding(supplier)
+    
     materials_list = [m.strip() for m in materials.split(",")]
     
     # Karbon ayak izi hesapla
