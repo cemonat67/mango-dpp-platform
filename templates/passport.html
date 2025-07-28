@@ -50,7 +50,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600 mb-1">Oluşturulma Tarihi</label>
-                        <p class="text-gray-900">{{ nft.created_at[:10] }}</p>
+                        <p class="text-gray-900">{{ nft.created_at.strftime('%Y-%m-%d') if nft.created_at else '' }}</p>
                     </div>
                 </div>
             </div>

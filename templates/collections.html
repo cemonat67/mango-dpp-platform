@@ -35,7 +35,7 @@
         
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-500">
-                {{ collection.created_at[:10] }}
+                {{ collection.created_at.strftime('%Y-%m-%d') if collection.created_at else '' }}
             </span>
             <div class="flex space-x-2">
                 <button class="text-blue-600 hover:text-blue-800">

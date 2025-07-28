@@ -75,7 +75,7 @@
         
         <div class="flex justify-between items-center">
             <span class="text-xs text-gray-500">
-                {{ style.created_at[:10] }}
+                {{ style.created_at.strftime('%Y-%m-%d') if style.created_at else '' }}
             </span>
             <div class="flex space-x-2">
                 {% if not style.image_url %}
