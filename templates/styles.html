@@ -7,13 +7,13 @@
     <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
             <i class="fas fa-tshirt text-primary mr-3"></i>
-            Stiller
+            {{ t.styles_title if t else "Styles" }}
         </h1>
-        <p class="text-gray-600">Stil tasarımları ve NFT dijital pasaport yönetimi</p>
+        <p class="text-gray-600">{{ t.styles_subtitle if t else "Style designs and NFT digital passport management" }}</p>
     </div>
     <button onclick="showCreateModal()" class="bg-primary text-white px-6 py-2 rounded-lg btn-primary transition-colors">
         <i class="fas fa-plus mr-2"></i>
-        Yeni Stil
+        {{ t.new_style if t else "New Style" }}
     </button>
 </div>
 

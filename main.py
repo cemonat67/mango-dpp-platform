@@ -351,13 +351,16 @@ async def create_collection(
 @app.get("/styles")
 async def styles_page(request: Request, db: Session = Depends(get_db)):
     """Stiller sayfası"""
+    lang = get_language(request)
     styles = mango_dpp.get_styles(db)
     collections = mango_dpp.get_collections(db)
     
     response = templates.TemplateResponse("styles.html", {
         "request": request,
         "styles": styles,
-        "collections": collections
+        "collections": collections,
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
     response.headers["Content-Type"] = "text/html; charset=utf-8"
     return response
@@ -511,31 +514,31 @@ async def generate_nft_passport(
         "passport_url": nft_data["qr_url"]
     })
 
-@app.get("/sustainability", response_class=HTMLResponse)
-async def sustainability_page(request: Request):
+@app.get("/sustainability")
+async def sustainability_page(request: Request, db: Session = Depends(get_db)):
     """Sürdürülebilirlik dashboard"""
-    total_carbon = sum([style.get("carbon_footprint", 0) for style in mango_dpp.styles.values()])
-    avg_carbon = total_carbon / len(mango_dpp.styles) if mango_dpp.styles else 0
+    lang = get_language(request)
+    styles = mango_dpp.get_styles(db)
+    
+    total_carbon = sum([style.carbon_footprint or 0 for style in styles])
+    avg_carbon = total_carbon / len(styles) if styles else 0
     
     # En düşük karbon ayak izli stiller
-    low_carbon_styles = sorted(
-        mango_dpp.styles.values(),
-        key=lambda x: x.get("carbon_footprint", 0)
-    )[:5]
+    low_carbon_styles = sorted(styles, key=lambda x: x.carbon_footprint or 0)[:5]
     
     # Karbon kategorilerine göre dağılım
-    low_carbon_count = len([s for s in mango_dpp.styles.values() if s.get("carbon_footprint", 0) < 3])
-    medium_carbon_count = len([s for s in mango_dpp.styles.values() if 3 <= s.get("carbon_footprint", 0) <= 5])
-    high_carbon_count = len([s for s in mango_dpp.styles.values() if s.get("carbon_footprint", 0) > 5])
+    low_carbon_count = len([s for s in styles if (s.carbon_footprint or 0) < 3])
+    medium_carbon_count = len([s for s in styles if 3 <= (s.carbon_footprint or 0) <= 5])
+    high_carbon_count = len([s for s in styles if (s.carbon_footprint or 0) > 5])
     
     # Malzeme analizi
     material_analysis = {}
-    for style in mango_dpp.styles.values():
-        for material in style.get("materials", []):
+    for style in styles:
+        for material in style.materials or []:
             if material not in material_analysis:
                 material_analysis[material] = {"count": 0, "total_carbon": 0}
             material_analysis[material]["count"] += 1
-            material_analysis[material]["total_carbon"] += style.get("carbon_footprint", 0)
+            material_analysis[material]["total_carbon"] += style.carbon_footprint or 0
     
     # Ortalama karbon hesapla
     for material in material_analysis:
@@ -543,17 +546,21 @@ async def sustainability_page(request: Request):
             material_analysis[material]["total_carbon"] / material_analysis[material]["count"], 2
         )
     
-    return templates.TemplateResponse("sustainability.html", {
+    response = templates.TemplateResponse("sustainability.html", {
         "request": request,
         "total_carbon": round(total_carbon, 2),
         "avg_carbon": round(avg_carbon, 2),
         "low_carbon_styles": low_carbon_styles,
-        "total_styles": len(mango_dpp.styles),
+        "total_styles": len(styles),
         "low_carbon_count": low_carbon_count,
         "medium_carbon_count": medium_carbon_count,
         "high_carbon_count": high_carbon_count,
-        "material_analysis": material_analysis
+        "material_analysis": material_analysis,
+        "lang": lang,
+        "t": get_all_texts(lang)
     })
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 @app.get("/sustainability/materials", response_class=HTMLResponse)
 async def materials_analysis(request: Request):

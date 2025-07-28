@@ -7,13 +7,13 @@
     <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">
             <i class="fas fa-layer-group text-navy mr-3"></i>
-            Koleksiyonlar
+            {{ t.collections_title if t else "Collections" }}
         </h1>
-        <p class="text-gray-600">Sezon bazl&inodot; koleksiyon y&ouml;netimi</p>
+        <p class="text-gray-600">{{ t.collections_subtitle if t else "Season-based collection management" }}</p>
     </div>
     <button onclick="showCreateModal()" class="bg-navy text-white px-6 py-2 rounded-lg btn-navy transition-colors">
         <i class="fas fa-plus mr-2"></i>
-        Yeni Koleksiyon
+        {{ t.new_collection if t else "New Collection" }}
     </button>
 </div>
 
@@ -65,41 +65,41 @@
 <!-- Create Collection Modal -->
 <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Yeni Koleksiyon Oluştur</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">{{ t.create_new_collection if t else "Create New Collection" }}</h2>
         
         <form id="createForm" onsubmit="createCollection(event)">
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Koleksiyon Adı</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.collection_name if t else "Collection Name" }}</label>
                 <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-navy">
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Sezon</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.season if t else "Season" }}</label>
                 <select name="season" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-navy">
-                    <option value="">Sezon Seçin</option>
-                    <option value="İlkbahar/Yaz">İlkbahar/Yaz</option>
-                    <option value="Sonbahar/Kış">Sonbahar/Kış</option>
-                    <option value="Pre-Fall">Pre-Fall</option>
-                    <option value="Resort">Resort</option>
+                    <option value="">{{ t.select_season if t else "Select Season" }}</option>
+                    <option value="{{ t.spring_summer if t else 'Spring/Summer' }}">{{ t.spring_summer if t else "Spring/Summer" }}</option>
+                    <option value="{{ t.autumn_winter if t else 'Autumn/Winter' }}">{{ t.autumn_winter if t else "Autumn/Winter" }}</option>
+                    <option value="Pre-Fall">{{ t.pre_fall if t else "Pre-Fall" }}</option>
+                    <option value="Resort">{{ t.resort if t else "Resort" }}</option>
                 </select>
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Yıl</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.year if t else "Year" }}</label>
                 <input type="number" name="year" value="2025" min="2024" max="2030" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-navy">
             </div>
             
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.description if t else "Description" }}</label>
                 <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus-navy"></textarea>
             </div>
             
             <div class="flex justify-end space-x-4">
                 <button type="button" onclick="hideCreateModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                    İptal
+                    {{ t.cancel if t else "Cancel" }}
                 </button>
                 <button type="submit" class="bg-navy text-white px-6 py-2 rounded-lg btn-navy transition-colors">
-                    Oluştur
+                    {{ t.create if t else "Create" }}
                 </button>
             </div>
         </form>
