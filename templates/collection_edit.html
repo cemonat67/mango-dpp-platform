@@ -38,8 +38,8 @@
                 <select id="season" name="season" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                     <option value="">{{ t['select_season'] if t else "Select Season" }}</option>
-                    <option value="İlkbahar/Yaz" {{ 'selected' if collection.season == 'İlkbahar/Yaz' else '' }}>İlkbahar/Yaz</option>
-                    <option value="Sonbahar/Kış" {{ 'selected' if collection.season == 'Sonbahar/Kış' else '' }}>Sonbahar/Kış</option>
+                    <option value="{{ t['spring_summer'] if t else 'Spring/Summer' }}" {{ 'selected' if collection.season in ['İlkbahar/Yaz', 'Spring/Summer'] else '' }}>{{ t['spring_summer'] if t else "Spring/Summer" }}</option>
+                    <option value="{{ t['autumn_winter'] if t else 'Autumn/Winter' }}" {{ 'selected' if collection.season in ['Sonbahar/Kış', 'Autumn/Winter'] else '' }}>{{ t['autumn_winter'] if t else "Autumn/Winter" }}</option>
                     <option value="Pre-Fall" {{ 'selected' if collection.season == 'Pre-Fall' else '' }}>Pre-Fall</option>
                     <option value="Resort" {{ 'selected' if collection.season == 'Resort' else '' }}>Resort</option>
                 </select>
@@ -59,7 +59,7 @@
                 </label>
                 <textarea id="description" name="description" rows="3" 
                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="Koleksiyon hakkında detaylı bilgi...">{{ collection.description }}</textarea>
+                          placeholder="{{ t['description'] if t else 'Detailed information about collection...' }}">{{ collection.description }}</textarea>
             </div>
         </div>
         
@@ -93,15 +93,15 @@ document.getElementById('editCollectionForm').addEventListener('submit', async f
         
         if (result.success) {
             // Show success message
-            alert('Koleksiyon başarıyla güncellendi!');
+            alert('{{ t["success"] if t else "Collection updated successfully!" }}');
             // Redirect to collection detail
             window.location.href = '/collections/{{ collection.id }}';
         } else {
-            alert('Hata: ' + (result.error || 'Bilinmeyen hata'));
+            alert('{{ t["error"] if t else "Error" }}: ' + (result.error || '{{ t["error"] if t else "Unknown error" }}'));
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Güncelleme sırasında hata oluştu');
+        alert('{{ t["error"] if t else "Error occurred during update" }}');
     }
 });
 </script>

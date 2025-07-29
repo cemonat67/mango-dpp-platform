@@ -281,6 +281,18 @@ def get_language(request: Request) -> str:
     """Get current language from cookie or default to Turkish"""
     return request.cookies.get("language", "tr")
 
+def translate_season(season: str, lang: str) -> str:
+    """Translate season names"""
+    season_map = {
+        "İlkbahar/Yaz": {"en": "Spring/Summer", "tr": "İlkbahar/Yaz"},
+        "Sonbahar/Kış": {"en": "Autumn/Winter", "tr": "Sonbahar/Kış"},
+        "Spring/Summer": {"en": "Spring/Summer", "tr": "İlkbahar/Yaz"},
+        "Autumn/Winter": {"en": "Autumn/Winter", "tr": "Sonbahar/Kış"},
+        "Pre-Fall": {"en": "Pre-Fall", "tr": "Pre-Fall"},
+        "Resort": {"en": "Resort", "tr": "Resort"}
+    }
+    return season_map.get(season, {}).get(lang, season)
+
 @app.get("/")
 async def dashboard(request: Request, db: Session = Depends(get_db)):
     """Ana dashboard"""
@@ -476,7 +488,7 @@ async def create_style(
         production_location=production_location,
         supplier=supplier,
         carbon_footprint=carbon_footprint,
-        status="tasarım"
+        status="design"
     )
     
     # AI görsel oluştur (istenirse)
@@ -492,7 +504,7 @@ async def create_style(
             image_path = await mango_dpp.generate_product_image(style_dict)
             if image_path:
                 style.image_url = image_path
-                style.status = "görsel_oluşturuldu"
+                style.status = "image_created"
         except Exception as e:
             print(f"Görsel oluşturma hatası: {e}")
     
@@ -513,10 +525,10 @@ async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
     try:
         style = db.query(Style).filter(Style.id == style_id).first()
         if not style:
-            return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+            return JSONResponse({"error": "Style not found"}, status_code=404)
         
         if not mango_dpp.ai_enabled:
-            return JSONResponse({"error": "AI görsel oluşturma devre dışı. OpenAI API key gerekli."}, status_code=400)
+            return JSONResponse({"error": "AI image generation disabled. OpenAI API key required."}, status_code=400)
     
         # Create style data for AI generation
         style_data = {
@@ -535,23 +547,23 @@ async def generate_style_image(style_id: str, db: Session = Depends(get_db)):
             return JSONResponse({
                 "success": True,
                 "image_url": image_path,
-                "message": "Görsel başarıyla oluşturuldu"
+                "message": "Image created successfully"
             })
         else:
             # More specific error based on AI status
             if not mango_dpp.ai_enabled:
-                return JSONResponse({"error": "OpenAI API key geçersiz veya eksik"}, status_code=500)
+                return JSONResponse({"error": "OpenAI API key invalid or missing"}, status_code=500)
             else:
-                return JSONResponse({"error": "Görsel oluşturulamadı - OpenAI API'de sorun olabilir"}, status_code=500)
+                return JSONResponse({"error": "Image could not be created - OpenAI API issue"}, status_code=500)
             
     except Exception as e:
         error_message = str(e)
         if "invalid_api_key" in error_message or "401" in error_message:
-            return JSONResponse({"error": "OpenAI API key geçersiz veya süresi dolmuş"}, status_code=401)
+            return JSONResponse({"error": "OpenAI API key invalid or expired"}, status_code=401)
         elif "billing" in error_message or "quota" in error_message:
-            return JSONResponse({"error": "OpenAI hesap bakiyesi yetersiz"}, status_code=402)
+            return JSONResponse({"error": "OpenAI account balance insufficient"}, status_code=402)
         else:
-            return JSONResponse({"error": f"Görsel oluşturma hatası: {str(e)}"}, status_code=500)
+            return JSONResponse({"error": f"Image generation error: {str(e)}"}, status_code=500)
 
 @app.get("/passport/{nft_id}", response_class=HTMLResponse)
 async def nft_passport(request: Request, nft_id: str, db: Session = Depends(get_db)):
@@ -568,19 +580,25 @@ async def nft_passport(request: Request, nft_id: str, db: Session = Depends(get_
     nft_data = {
         "id": nft_id,
         "name": style.name if style else "",
+        "product_code": nft_passport.product_code,
         "collection": collection.name if collection else "",
         "materials": style.materials if style and style.materials else [],
         "production_location": style.production_location if style else "",
+        "supplier": style.supplier if style else "",
         "carbon_footprint": style.carbon_footprint if style else 0,
         "certificates": nft_passport.certificates if nft_passport.certificates else [],
         "blockchain_hash": nft_passport.blockchain_hash,
-        "qr_code": f"data:image/png;base64,{nft_passport.qr_code_data}" if nft_passport.qr_code_data else "",
-        "qr_url": f"https://mango-dpp-platform-production.up.railway.app/passport/{nft_id}"
+        "qr_code": nft_passport.qr_code_data,
+        "qr_url": f"https://mango-dpp-platform-production.up.railway.app/passport/{nft_id}",
+        "created_at": nft_passport.created_at
     }
+    
+    lang = get_language(request)
     
     return templates.TemplateResponse("passport.html", {
         "request": request,
-        "nft": nft_data
+        "nft": nft_data,
+        "t": get_all_texts(lang)
     })
 
 @app.post("/generate-nft")
@@ -594,7 +612,7 @@ async def generate_nft_passport(
     try:
         style = db.query(Style).filter(Style.id == style_id).first()
         if not style:
-            return JSONResponse({"error": "Stil bulunamadı"}, status_code=404)
+            return JSONResponse({"error": "Style not found"}, status_code=404)
         
         collection = db.query(Collection).filter(Collection.id == style.collection_id).first()
     
