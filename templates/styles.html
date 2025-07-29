@@ -104,7 +104,7 @@
         <p class="text-gray-500 mb-6">{{ t['start_creating_style'] if t else "Start by creating your first style." }}</p>
         <button onclick="showCreateModal()" class="btn-green-special text-white px-6 py-3 rounded-lg transition-colors">
             <i class="fas fa-plus mr-2"></i>
-            İlk Stili Olu&scedil;tur
+            {{ t['create_first_style'] if t else "Create First Style" }}
         </button>
     </div>
     {% endif %}
