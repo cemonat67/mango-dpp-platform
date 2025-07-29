@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ collection.name }} Düzenle - Mango DPP{% endblock %}
+{% block title %}{{ t['edit'] if t else 'Edit' }} {{ collection.name }} - Mango DPP{% endblock %}
 
 {% block content %}
 <div class="mb-6 md:mb-8">
@@ -8,9 +8,9 @@
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 <i class="fas fa-edit text-primary mr-2 md:mr-3"></i>
-                Koleksiyon Düzenle
+                {{ t['edit'] if t else 'Edit' }} {{ t['collection'] if t else 'Collection' }}
             </h1>
-            <p class="text-sm md:text-base text-gray-600">{{ collection.name }} koleksiyonunu düzenle</p>
+            <p class="text-sm md:text-base text-gray-600">{{ t['edit'] if t else 'Edit' }} {{ collection.name }} {{ t['collection'] if t else 'collection' }}</p>
         </div>
         <a href="/collections/{{ collection.id }}" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors self-start md:self-auto">
             <i class="fas fa-arrow-left mr-2"></i>
@@ -33,7 +33,7 @@
             
             <div>
                 <label for="season" class="block text-sm font-medium text-gray-700 mb-1">
-                    Sezon <span class="text-red-500">*</span>
+                    {{ t['season'] if t else "Season" }} <span class="text-red-500">*</span>
                 </label>
                 <select id="season" name="season" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -47,7 +47,7 @@
             
             <div>
                 <label for="year" class="block text-sm font-medium text-gray-700 mb-1">
-                    Yıl <span class="text-red-500">*</span>
+                    {{ t['year'] if t else "Year" }} <span class="text-red-500">*</span>
                 </label>
                 <input type="number" id="year" name="year" value="{{ collection.year }}" min="2020" max="2030" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
@@ -55,7 +55,7 @@
             
             <div class="md:col-span-2">
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                    Açıklama
+                    {{ t['description'] if t else "Description" }}
                 </label>
                 <textarea id="description" name="description" rows="3" 
                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -66,7 +66,7 @@
         <div class="flex justify-end space-x-4 mt-8">
             <a href="/collections/{{ collection.id }}" 
                class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                İptal
+                {{ t['cancel'] if t else "Cancel" }}
             </a>
             <button type="submit" 
                     class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">

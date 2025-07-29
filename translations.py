@@ -54,6 +54,9 @@ translations = {
         "start_creating_style": "İlk stilinizi oluşturmak için başlayın.",
         "no_collections_yet_empty": "Henüz koleksiyon yok",
         "start_creating_collection": "İlk koleksiyonunuzu oluşturmak için başlayın.",
+        "year": "Yıl",
+        "season": "Sezon",
+        "collection": "koleksiyon",
         
         # Collections
         "collections_title": "Koleksiyonlar",
@@ -331,6 +334,9 @@ translations = {
         "start_creating_style": "Start by creating your first style.",
         "no_collections_yet_empty": "No collections yet",
         "start_creating_collection": "Start by creating your first collection.",
+        "year": "Year",
+        "season": "Season", 
+        "collection": "collection",
         
         # Collections
         "collections_title": "Collections",
