@@ -64,6 +64,7 @@ translations = {
         "supplier": "Tedarikçi",
         "ai_generate_image": "AI ile ürün görseli oluştur (DALL-E 3)",
         "openai_api_required": "OpenAI API key gereklidir. Görsel oluşturma birkaç saniye sürebilir.",
+        "ai_image": "AI ile oluşturuldu",
         
         # Collections
         "collections_title": "Koleksiyonlar",
@@ -351,6 +352,7 @@ translations = {
         "supplier": "Supplier",
         "ai_generate_image": "Create product image with AI (DALL-E 3)",
         "openai_api_required": "OpenAI API key required. Image generation may take a few seconds.",
+        "ai_image": "AI Generated",
         
         # Collections
         "collections_title": "Collections",
