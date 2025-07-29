@@ -57,6 +57,13 @@ translations = {
         "year": "Yıl",
         "season": "Sezon",
         "collection": "koleksiyon",
+        "style_name": "Stil Adı",
+        "category": "Kategori",
+        "select_category": "Kategori Seçin",
+        "materials_comma_separated": "Malzemeler (virgülle ayırın)",
+        "supplier": "Tedarikçi",
+        "ai_generate_image": "AI ile ürün görseli oluştur (DALL-E 3)",
+        "openai_api_required": "OpenAI API key gereklidir. Görsel oluşturma birkaç saniye sürebilir.",
         
         # Collections
         "collections_title": "Koleksiyonlar",
@@ -337,6 +344,13 @@ translations = {
         "year": "Year",
         "season": "Season", 
         "collection": "collection",
+        "style_name": "Style Name",
+        "category": "Category",
+        "select_category": "Select Category",
+        "materials_comma_separated": "Materials (comma separated)",
+        "supplier": "Supplier",
+        "ai_generate_image": "Create product image with AI (DALL-E 3)",
+        "openai_api_required": "OpenAI API key required. Image generation may take a few seconds.",
         
         # Collections
         "collections_title": "Collections",
